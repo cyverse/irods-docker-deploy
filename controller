@@ -1,0 +1,50 @@
+#! /bin/bash
+#
+# Usage:
+#  controller (start|stop)
+#
+# Starts or stops all of the containers.
+cfg=config.inc
+
+set -e
+
+
+if [[ "$OSTYPE" == "darwin"* ]]
+then
+  readonly ExecName=$(greadlink -f "$0")
+else
+  readonly ExecName=$(readlink --canonicalize "$0")
+fi
+
+main()
+{
+  local baseDir=$(dirname "$ExecName")
+
+  if [ "$#" -lt 1 ]
+  then
+    printf 'Requires either "start" or "stop" as its second parameter.\n' >&2
+    return 1
+  fi
+
+  local action="$1"
+
+  . "$baseDir/$cfg"
+
+  case "$action" in
+    start)
+      local dcCmd='up -d'
+      ;;
+    stop)
+      local dcCmd='down --remove-orphans --volumes'
+      ;;
+    *)
+      printf 'Unknown command "%s"\n' "$action" >&2
+      return 1
+      ;;
+  esac
+
+  docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" $dcCmd
+}
+
+
+main "$@"

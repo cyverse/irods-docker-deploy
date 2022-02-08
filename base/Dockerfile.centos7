@@ -1,0 +1,11 @@
+FROM centos:7
+
+COPY base/config.sh /tmp/config
+
+RUN /tmp/config centos 7
+RUN ssh-keygen -q -f /etc/ssh/ssh_host_ecdsa_key -N '' -t ecdsa
+RUN ssh-keygen -q -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
+
+COPY base/entrypoint.sh /entrypoint
+
+ENTRYPOINT [ "/entrypoint" ]

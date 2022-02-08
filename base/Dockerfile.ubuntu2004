@@ -1,0 +1,11 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+COPY base/config.sh /tmp/config
+
+RUN /tmp/config ubuntu 20.04
+
+COPY base/entrypoint.sh /entrypoint
+
+ENTRYPOINT [ "/entrypoint" ]
