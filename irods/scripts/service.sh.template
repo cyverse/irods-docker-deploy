@@ -16,7 +16,7 @@
 # DBMS_HOST            The FQDN or IP address of the PostgreSQL server
 # DBMS_PORT            The TCP port the PostgreSQL will listen on.
 # IRODS_SYSTEM_GROUP   The default group of the service account
-# IRODS_ZONE_PASSWORD  The password used to authenticate the clerver user
+# IRODS_ADMIN_PASSWORD  The password used to authenticate the clerver user
 
 
 main()
@@ -70,7 +70,7 @@ start()
     touch /var/lock/subsys/irods
 
     printf 'Authenticating clerver user\n'
-    su --command "iinit '$IRODS_ZONE_PASSWORD'" --login "$IRODS_SYSTEM_USER"
+    su --command "iinit '$IRODS_ADMIN_PASSWORD'" --login "$IRODS_SYSTEM_USER"
   fi
 }
 

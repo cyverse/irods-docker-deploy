@@ -31,11 +31,11 @@
 # IRODS_ZONE_KEY              The shared secred used for authentication during
 #                             server-to-server communication
 # IRODS_ZONE_NAME             The name of the iRODS zone.
-# IRODS_ZONE_PASSWORD         The password used to authenticate the
-#                             IRODS_ZONE_USER user.
+# IRODS_ADMIN_PASSWORD         The password used to authenticate the
+#                             IRODS_ADMIN_USER user.
 # IRODS_ZONE_PORT             The main TCP port used by the zone for
 #                             communication.
-# IRODS_ZONE_USER             The main rodsadmin user.
+# IRODS_ADMIN_USER             The main rodsadmin user.
 
 set -o errexit -o nounset -o pipefail
 
@@ -124,20 +124,20 @@ mk_irods_env()
   jq --sort-keys --from-file /dev/stdin <(echo '{}') <<JQ
 .irods_host = "$IRODS_HOST" |
 .irods_port = $IRODS_ZONE_PORT |
-.irods_user_name = "$IRODS_ZONE_USER" |
+.irods_user_name = "$IRODS_ADMIN_USER" |
 .irods_zone_name = "$IRODS_ZONE_NAME" |
 .irods_client_server_negotiation = "request_server_negotiation" | 
 .irods_client_server_policy = "CS_NEG_REFUSE" |
 .irods_control_plane_key = "$IRODS_CONTROL_PLANE_KEY" |
 .irods_control_plane_port = $IRODS_CONTROL_PLANE_PORT |
-.irods_cwd = "/$IRODS_ZONE_NAME/home/$IRODS_ZONE_USER" |
+.irods_cwd = "/$IRODS_ZONE_NAME/home/$IRODS_ADMIN_USER" |
 .irods_default_hash_scheme = "SHA256" |
 .irods_default_resource = "$IRODS_DEFAULT_RESOURCE" |
 .irods_encryption_algorithm = "AES-256-CBC" |
 .irods_encryption_key_size = 32 |
 .irods_encryption_num_hash_rounds = 16 |
 .irods_encryption_salt_size = 8 |
-.irods_home = "/$IRODS_ZONE_NAME/home/$IRODS_ZONE_USER" |
+.irods_home = "/$IRODS_ZONE_NAME/home/$IRODS_ADMIN_USER" |
 .irods_match_hash_policy = "compatible" |
 .schema_name = "service_account_environment" |
 .schema_version = "v3"
@@ -184,7 +184,7 @@ mk_server_cfg()
 .zone_key |= "$IRODS_ZONE_KEY" |
 .zone_name |= "$IRODS_ZONE_NAME" |
 .zone_port |= $IRODS_ZONE_PORT |
-.zone_user |= "$IRODS_ZONE_USER" |
+.zone_user |= "$IRODS_ADMIN_USER" |
 .plugin_configuration.database.postgres |= {
   "db_host": "$DBMS_HOST",
   "db_name": "$DB_NAME",

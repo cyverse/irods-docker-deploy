@@ -13,8 +13,10 @@ services:
         DB_USER: "$DB_USER"
         DB_PASSWORD: "$DB_PASSWORD"
         DBMS_PORT: "$DBMS_PORT"
-        IRODS_ZONE_USER: "$IRODS_ADMIN_USER"
-        IRODS_ZONE_PASSWORD: "$IRODS_ADMIN_PASSWORD"
+        IRODS_ADMIN_USER: "$IRODS_ADMIN_USER"
+        IRODS_ADMIN_PASSWORD: "$IRODS_ADMIN_PASSWORD"
+    volumes:
+      - "db_volume:/var/lib/postgresql/12/main"
 
   irods:
     build:
@@ -40,8 +42,14 @@ services:
         IRODS_ZONE_NAME: "$IRODS_ZONE_NAME"
         IRODS_ZONE_KEY: "$IRODS_ZONE_KEY"
         IRODS_ZONE_PORT: "$IRODS_ZONE_PORT"
-        IRODS_ZONE_USER: "$IRODS_ADMIN_USER"
-        IRODS_ZONE_PASSWORD: "$IRODS_ADMIN_PASSWORD"
+        IRODS_ADMIN_USER: "$IRODS_ADMIN_USER"
+        IRODS_ADMIN_PASSWORD: "$IRODS_ADMIN_PASSWORD"
     hostname: "$IRODS_CONF_HOST"
+    volumes:
+      - "irods_volume:$IRODS_VAULT"
     depends_on:
       - dbms
+  
+volumes:
+  db_volume:
+  irods_volume:

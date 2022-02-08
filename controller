@@ -35,7 +35,7 @@ main()
       local dcCmd='up -d'
       ;;
     stop)
-      local dcCmd='down --remove-orphans --volumes'
+      local dcCmd='down --remove-orphans'
       ;;
     *)
       printf 'Unknown command "%s"\n' "$action" >&2

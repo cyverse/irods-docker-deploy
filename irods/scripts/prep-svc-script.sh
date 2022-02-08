@@ -8,7 +8,7 @@
 # DBMS_PORT            The TCP port the PostgreSQL will listen on.
 # IRODS_SYSTEM_GROUP   The system group for the iRODS process
 # IRODS_SYSTEM_USER    The system user for the iRODS process
-# IRODS_ZONE_PASSWORD  The password used to authenticate the clever user.
+# IRODS_ADMIN_PASSWORD  The password used to authenticate the clever user.
 
 
 main()
@@ -37,7 +37,7 @@ s/\$DBMS_HOST/$(escape $DBMS_HOST)/g
 s/\$DBMS_PORT/$(escape $DBMS_PORT)/g
 s/\$IRODS_SYSTEM_GROUP/$(escape $IRODS_SYSTEM_GROUP)/g
 s/\$IRODS_SYSTEM_USER/$(escape $IRODS_SYSTEM_USER)/g
-s/\$IRODS_ZONE_PASSWORD/$(escape $IRODS_ZONE_PASSWORD)/g
+s/\$IRODS_ADMIN_PASSWORD/$(escape $IRODS_ADMIN_PASSWORD)/g
 EOF
 }
 
