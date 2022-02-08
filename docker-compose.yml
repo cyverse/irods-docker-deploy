@@ -45,6 +45,8 @@ services:
         IRODS_ADMIN_USER: "$IRODS_ADMIN_USER"
         IRODS_ADMIN_PASSWORD: "$IRODS_ADMIN_PASSWORD"
     hostname: "$IRODS_CONF_HOST"
+    ports:
+      - "1247:1247"
     volumes:
       - "irods_volume:$IRODS_VAULT"
     depends_on:
