@@ -15,6 +15,8 @@ services:
         DBMS_PORT: "$DBMS_PORT"
         IRODS_ADMIN_USER: "$IRODS_ADMIN_USER"
         IRODS_ADMIN_PASSWORD: "$IRODS_ADMIN_PASSWORD"
+        IRODS_BISQUE_ADMIN_USER: "$IRODS_BISQUE_ADMIN_USER"
+        IRODS_BISQUE_ADMIN_PASSWORD: "$IRODS_BISQUE_ADMIN_PASSWORD"
     volumes:
       - "db_volume:/var/lib/postgresql/12/main"
 
