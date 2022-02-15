@@ -12,7 +12,7 @@ export DB_USER=irods
 export DB_PASSWORD=test_db_password
 
 export IRODS_FIRST_EPHEMERAL_PORT=20000
-export IRODS_LAST_EPHEMERAL_PORT=20009
+export IRODS_LAST_EPHEMERAL_PORT=20199
 export IRODS_RES_CONF_NAME=demoResc
 export IRODS_SCHEMA_VALIDATION=off
 export IRODS_VAULT=/var/lib/irods/Vault
