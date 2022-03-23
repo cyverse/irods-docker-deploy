@@ -1,7 +1,7 @@
 #! /bin/bash
 #
 # Usage:
-#  controller (start|stop)
+#  controller (start|stop|dbbackup)
 #
 # Starts or stops all of the containers.
 cfg=config.inc
@@ -31,6 +31,20 @@ main()
   . "$baseDir/$cfg"
 
   case "$action" in
+    create_volumes)
+      mkdir -p "$LOCAL_IRODS_VOLUME_PATH"
+      docker volume create --driver local \
+        --opt type=none \
+        --opt device="$LOCAL_IRODS_VOLUME_PATH" \
+        --opt o=bind "$DOCKER_IRODS_VOLUME"
+
+      mkdir -p "$LOCAL_DB_VOLUME_PATH"
+      docker volume create --driver local \
+        --opt type=none \
+        --opt device="$LOCAL_DB_VOLUME_PATH" \
+        --opt o=bind "$DOCKER_DB_VOLUME"
+      return 0
+      ;;
     start)
       local dcCmd='up -d'
       ;;

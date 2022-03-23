@@ -9,6 +9,14 @@ Update configuration parameters set in `config.inc`.
 ./build
 ```
 
+## Create Volumes
+Creates Docker volumes set in `config.inc`.
+By default, it creates two volumes, `irods_volume` and `db_volume`.
+
+```bash
+./controller create_volumes
+```
+
 ## Start
 
 ```bash
