@@ -11,7 +11,7 @@ Update configuration parameters set in `config.inc`.
 
 ## Create Volumes
 Creates Docker volumes set in `config.inc`.
-By default, it creates two volumes, `irods_volume` and `db_volume`.
+By default, it creates three volumes, `irods_volume`, `db_volume`, and `db_backup_volume`.
 
 ```bash
 ./controller create_volumes
@@ -27,4 +27,11 @@ By default, it creates two volumes, `irods_volume` and `db_volume`.
 
 ```bash
 ./controller stop
+```
+
+## Backup DB Data
+Backup DB data and creates a backup file on the volume `db_backup_volume`.
+
+```bash
+./controller backup_db
 ```

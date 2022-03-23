@@ -19,6 +19,7 @@ services:
         IRODS_BISQUE_ADMIN_PASSWORD: "$IRODS_BISQUE_ADMIN_PASSWORD"
     volumes:
       - "db_volume:/var/lib/postgresql/12/main"
+      - "db_backup_volume:/var/opt/db_backup"
 
   irods:
     build:
@@ -57,6 +58,8 @@ services:
   
 volumes:
   db_volume:
+    external: true
+  db_backup_volume:
     external: true
   irods_volume:
     external: true

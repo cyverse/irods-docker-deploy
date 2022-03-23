@@ -36,5 +36,7 @@ export IRODS_CONF_HOST="$ENV_NAME"_irods_1."$DOMAIN"
 
 export DOCKER_IRODS_VOLUME=irods_volume
 export DOCKER_DB_VOLUME=db_volume
+export DOCKER_DB_BACKUP_VOLUME=db_backup_volume
 export LOCAL_IRODS_VOLUME_PATH=/opt/irods-docker-deploy/irods_volume
 export LOCAL_DB_VOLUME_PATH=/opt/irods-docker-deploy/db_volume
+export LOCAL_DB_BACKUP_VOLUME_PATH=/opt/irods-docker-deploy/db_backup_volume

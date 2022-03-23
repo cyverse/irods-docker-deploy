@@ -43,21 +43,36 @@ main()
         --opt type=none \
         --opt device="$LOCAL_DB_VOLUME_PATH" \
         --opt o=bind "$DOCKER_DB_VOLUME"
-      return 0
+
+      mkdir -p "$LOCAL_DB_BACKUP_VOLUME_PATH"
+      docker volume create --driver local \
+        --opt type=none \
+        --opt device="$LOCAL_DB_BACKUP_VOLUME_PATH" \
+        --opt o=bind "$DOCKER_DB_BACKUP_VOLUME"
+      ;;
+    backup_db)
+      local db_backup_dir=/var/opt/db_backup
+      local db_backup_file=pg_backup_`date +"%Y%m%d%H%M"`.sql
+      docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" exec -e PGPASSWORD="$DB_PASSWORD" dbms pg_dump -U "$DB_USER" -d "$DB_NAME" -F p -f "$db_backup_dir/$db_backup_file"
+      
+      if test -f "$LOCAL_DB_BACKUP_VOLUME_PATH/$db_backup_file"; then
+        printf 'Created a DB backup file - "%s"\n' "$LOCAL_DB_BACKUP_VOLUME_PATH/$db_backup_file"
+      else
+        printf 'Failed to created a DB backup file - "%s"\n' "$LOCAL_DB_BACKUP_VOLUME_PATH/$db_backup_file" >&2
+      fi
+
       ;;
     start)
-      local dcCmd='up -d'
+      docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" up -d
       ;;
     stop)
-      local dcCmd='down --remove-orphans'
+      docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" down --remove-orphans
       ;;
     *)
       printf 'Unknown command "%s"\n' "$action" >&2
       return 1
       ;;
   esac
-
-  docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" $dcCmd
 }
 
 
