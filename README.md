@@ -35,3 +35,11 @@ Backup DB data and creates a backup file on the volume `db_backup_volume`.
 ```bash
 ./controller backup_db
 ```
+
+Use `cron` to backup DB data repeatedly. 
+
+
+```bash
+echo "0 1 * * * root bash ${PWD}/controller backup_db" | sudo tee -a /etc/crontab > /dev/null
+```
+
