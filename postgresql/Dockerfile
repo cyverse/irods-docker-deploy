@@ -31,5 +31,6 @@ RUN /tmp/config
 USER root
 
 COPY postgresql/service.sh /
+RUN chmod a+rx /service.sh
 
 CMD [ "/service.sh" ]

@@ -197,7 +197,7 @@ mk_server_cfg()
 .plugin_configuration.rule_engines |= map_values(
   if .instance_name == "irods_rule_engine_plugin-irods_rule_language-instance" then 
     .plugin_specific_configuration.re_rulebase_set = 
-      [ "pre-config" ] + .plugin_specific_configuration.re_rulebase_set  
+      [ "ipc-custom" ] + .plugin_specific_configuration.re_rulebase_set  
   else 
     .
   end )

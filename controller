@@ -22,7 +22,7 @@ main()
 
   if [ "$#" -lt 1 ]
   then
-    printf 'Requires either "start" or "stop" as its second parameter.\n' >&2
+    printf 'Requires "create_volumes", "backup_db", "start" or "stop" as its second parameter.\n' >&2
     return 1
   fi
 

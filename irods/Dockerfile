@@ -54,7 +54,18 @@ COPY irods/scripts/service.sh.template /tmp/
 COPY irods/scripts/prep-svc-script.sh /tmp/prep-svc-script
 RUN /tmp/prep-svc-script
 
-CMD [ "/service.sh" ]
+### Install iRODS Rules
+COPY irods/rules/ipc-custom.re /etc/irods/
+COPY irods/rules/ipc-logic.re /etc/irods/
+COPY irods/rules/ipc-uuid.re /etc/irods/
+COPY irods/rules/ipc-json.re /etc/irods/
+COPY irods/rules/ipc-env.re.template /tmp/
+COPY irods/scripts/prep-re-script.sh /tmp/prep-re-script
+RUN /tmp/prep-re-script
 
-### Install testing support artifacts
-COPY irods/config/pre-config.re /etc/irods/
+### Install scripts used by iRODS Rules
+COPY irods/rule_scripts/amqptopicsend.py /etc/irods/
+COPY irods/rule_scripts/generateuuid.sh /etc/irods/
+COPY irods/rule_scripts/setuuid.sh /etc/irods/
+
+CMD [ "/service.sh" ]
