@@ -11,10 +11,6 @@ export DB_NAME=ICAT
 export DB_USER=irods
 export DB_PASSWORD=test_db_password
 
-export NATS_CLUSTER_ID=irods-nats-streaming
-export NATS_MANAGEMENT_PORT=8222
-export NATS_PORT=4222
-
 export IRODS_FIRST_EPHEMERAL_PORT=20000
 export IRODS_LAST_EPHEMERAL_PORT=20199
 export IRODS_RES_CONF_NAME=demoResc
@@ -37,8 +33,14 @@ export IRODS_ADMIN_PASSWORD=test_rods_password
 export IRODS_BISQUE_ADMIN_USER=bisque_admin
 export IRODS_BISQUE_ADMIN_PASSWORD=test_bisque_admin_password
 
-export NATS_CONF_HOST="$ENV_NAME"_nats_1."$DOMAIN"
 export IRODS_CONF_HOST="$ENV_NAME"_irods_1."$DOMAIN"
+export NATS_CONF_HOST="$ENV_NAME"_nats_1."$DOMAIN"
+
+export NATS_PORT=4222
+export NATS_URL=nats://"$NATS_CONF_HOST":"$NATS_PORT"
+export NATS_CLUSTER_ID=irods-nats-streaming
+export NATS_CLIENT_ID=irods-nats-streaming-client
+export NATS_MANAGEMENT_PORT=8222
 
 export DOCKER_IRODS_VOLUME=irods_volume
 export DOCKER_DB_VOLUME=db_volume

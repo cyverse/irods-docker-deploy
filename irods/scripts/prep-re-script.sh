@@ -29,6 +29,10 @@ expand_tmpl()
 {
   cat <<EOF | sed --file - /tmp/ipc-env.re.template
 s/\$IRODS_MAX_NUM_RE_PROCS/$(escape $IRODS_MAX_NUM_RE_PROCS)/g
+s/\$IRODS_ZONE_NAME/$(escape $IRODS_ZONE_NAME)/g
+s/\$NATS_CLUSTER_ID/$(escape $NATS_CLUSTER_ID)/g
+s/\$NATS_CLIENT_ID/$(escape $NATS_CLIENT_ID)/g
+s/\$NATS_URL/$(escape $NATS_URL)/g
 EOF
 }
 

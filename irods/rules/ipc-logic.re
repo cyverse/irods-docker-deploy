@@ -98,7 +98,7 @@ retrieveUUID(*EntityType, *EntityPath) {
 }
 
 
-# sends a message to a given AMQP topic exchange
+# sends a message to a given NATS Streaming
 #
 # Parameters:
 #  *Topic  (string) the topic of the message
@@ -108,16 +108,18 @@ retrieveUUID(*EntityType, *EntityPath) {
 #  It executes the amqptopicsend.py command script on the rule engine host
 #
 sendMsg(*Topic, *Msg) {
-  *exchangeArg = execCmdArg(ipc_AMQP_EXCHANGE);
+  *natsURLArg = execCmdArg(ipc_NATS_URL);
+  *natsClusterIDArg = execCmdArg(ipc_NATS_CLUSTER_ID);
+  *natsClientIDArg = execCmdArg(ipc_NATS_CLIENT_ID);
   *topicArg = execCmdArg(*Topic);
   *msgArg = execCmdArg(*Msg);
-  *argStr = '*exchangeArg *topicArg *msgArg';
+  *argStr = '*natsURLArg *natsClusterIDArg *natsClientIDArg *topicArg *msgArg';
 
   *status = errormsg(
-    msiExecCmd('amqptopicsend.py', *argStr, ipc_RE_HOST, 'null', 'null', *out), *errMsg );
+    msiExecCmd('stanmsgsend.py', *argStr, 'null', 'null', 'null', *out), *errMsg );
 
   if (*status < 0) {
-    writeLine("serverLog", "Failed to send AMQP message: *errMsg");
+    writeLine("serverLog", "Failed to send NATS streaming message: *errMsg");
   }
 
   0;

@@ -21,7 +21,7 @@ RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
       http://people.renci.org/~dmoore/irods_netcdf/packages_2021_03_24/irods-netcdf-server_modules-4.2.8.0-centos-7-x86_64.rpm
 
 ### Install libraries required by command scripts
-RUN pip --disable-pip-version-check install pika
+RUN pip3 --disable-pip-version-check install asyncio-nats-streaming
 
 ARG DB_NAME=ICAT
 ARG DB_PASSWORD=testpassword
@@ -44,6 +44,10 @@ ARG IRODS_ZONE_NAME=tempZone
 ARG IRODS_ADMIN_PASSWORD=rods
 ARG IRODS_ZONE_PORT=1247
 ARG IRODS_ADMIN_USER=rods
+ARG IRODS_MAX_NUM_RE_PROCS=4
+ARG NATS_CLUSTER_ID=nats-streaming
+ARG NATS_CLIENT_ID=nats-streaming-client
+ARG NATS_URL=
 
 ### Configure ODBC and iRODS
 COPY irods/scripts/config-irods.sh /tmp/config-irods
@@ -56,6 +60,7 @@ RUN /tmp/prep-svc-script
 
 ### Install iRODS Rules
 COPY irods/rules/ipc-custom.re /etc/irods/
+COPY irods/rules/ipc-services.re /etc/irods/
 COPY irods/rules/ipc-logic.re /etc/irods/
 COPY irods/rules/ipc-uuid.re /etc/irods/
 COPY irods/rules/ipc-json.re /etc/irods/
@@ -64,8 +69,8 @@ COPY irods/scripts/prep-re-script.sh /tmp/prep-re-script
 RUN /tmp/prep-re-script
 
 ### Install scripts used by iRODS Rules
-COPY irods/rule_scripts/amqptopicsend.py /etc/irods/
-COPY irods/rule_scripts/generateuuid.sh /etc/irods/
-COPY irods/rule_scripts/setuuid.sh /etc/irods/
+COPY irods/rule_scripts/stanmsgsend.py /var/lib/irods/msiExecCmd_bin/
+COPY irods/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
+COPY irods/rule_scripts/setuuid.sh /var/lib/irods/msiExecCmd_bin/
 
 CMD [ "/service.sh" ]
