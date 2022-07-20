@@ -35,6 +35,7 @@ export IRODS_BISQUE_ADMIN_PASSWORD=test_bisque_admin_password
 
 export IRODS_CONF_HOST="$ENV_NAME"_irods_1."$DOMAIN"
 export NATS_CONF_HOST="$ENV_NAME"_nats_1."$DOMAIN"
+export SFTPGO_CONF_HOST="$ENV_NAME"_sftpgo_1."$DOMAIN"
 
 export NATS_PORT=4222
 export NATS_URL=nats://"$NATS_CONF_HOST":"$NATS_PORT"
@@ -42,9 +43,24 @@ export NATS_CLUSTER_ID=irods-nats-streaming
 export NATS_CLIENT_ID=irods-nats-streaming-client
 export NATS_MANAGEMENT_PORT=8222
 
+export SFTP_PORT=2022
+export SFTPGO_ADMIN_UI_PORT=8022
+export SFTPGO_VAULT=/srv/sftpgo
+export SFTPGO_ADMIN_USER=sftpgo_admin
+export SFTPGO_ADMIN_PASSWORD=test_sftpgo_admin_password
+export SFTPGO_LOG_DIR=/var/log/sftpgo
+
+export IRODS_PROXY_USER="$IRODS_BISQUE_ADMIN_USER"
+export IRODS_PROXY_PASSWORD="$IRODS_BISQUE_ADMIN_PASSWORD"
+export IRODS_PORT="$IRODS_ZONE_PORT"
+export IRODS_ZONE="$IRODS_ZONE_NAME"
+export IRODS_SHARED=/"$IRODS_ZONE_NAME"/home/public
+
 export DOCKER_IRODS_VOLUME=irods_volume
 export DOCKER_DB_VOLUME=db_volume
 export DOCKER_DB_BACKUP_VOLUME=db_backup_volume
+export DOCKER_SFTPGO_VOLUME=sftpgo_volume
 export LOCAL_IRODS_VOLUME_PATH=/opt/irods-docker-deploy/irods_volume
 export LOCAL_DB_VOLUME_PATH=/opt/irods-docker-deploy/db_volume
 export LOCAL_DB_BACKUP_VOLUME_PATH=/opt/irods-docker-deploy/db_backup_volume
+export LOCAL_SFTPGO_VOLUME_PATH=/opt/irods-docker-deploy/sftpgo_volume

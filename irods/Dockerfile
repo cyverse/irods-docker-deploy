@@ -21,7 +21,7 @@ RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
       http://people.renci.org/~dmoore/irods_netcdf/packages_2021_03_24/irods-netcdf-server_modules-4.2.8.0-centos-7-x86_64.rpm
 
 ### Install libraries required by command scripts
-RUN pip3 --disable-pip-version-check install asyncio-nats-streaming
+RUN pip3 --disable-pip-version-check install protobuf==3.19.4 asyncio-nats-streaming
 
 ARG DB_NAME=ICAT
 ARG DB_PASSWORD=testpassword

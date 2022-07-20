@@ -83,13 +83,48 @@ services:
       - dbms
       - nats
   
+  sftpgo:
+    build:
+      context: .
+      dockerfile: sftpgo/Dockerfile
+      args:
+        SFTP_PORT: "$SFTP_PORT"
+        SFTPGO_ADMIN_UI_PORT: "$SFTPGO_ADMIN_UI_PORT"
+        SFTPGO_VAULT: "$SFTPGO_VAULT"
+    environment:
+      - "SFTPGO_DEFAULT_ADMIN_USERNAME=$SFTPGO_ADMIN_USER"
+      - "SFTPGO_DEFAULT_ADMIN_PASSWORD=$SFTPGO_ADMIN_PASSWORD"
+      - "SFTPGO_LOG_DIR=$SFTPGO_LOG_DIR"
+      - "SFTPGO_LOG_FILE_PATH=$SFTPGO_LOG_DIR/sftpgo.log"
+      - "IRODS_PROXY_USER=$IRODS_PROXY_USER"
+      - "IRODS_PROXY_PASSWORD=$IRODS_PROXY_PASSWORD"
+      - "IRODS_HOST=$IRODS_CONF_HOST"
+      - "IRODS_PORT=$IRODS_PORT"
+      - "IRODS_ZONE=$IRODS_ZONE"
+      - "IRODS_SHARED=$IRODS_SHARED"
+    hostname: "$SFTPGO_CONF_HOST"
+    ports:
+      - "$SFTP_PORT:$SFTP_PORT"
+      - "$SFTPGO_ADMIN_UI_PORT:$SFTPGO_ADMIN_UI_PORT"
+    volumes:
+      - type: volume
+        source: sftpgo_volume
+        target: "$SFTPGO_VAULT"
+      - type: bind
+        source: "$SFTPGO_LOG_DIR"
+        target: "$SFTPGO_LOG_DIR"
+    depends_on:
+      - irods
+  
 volumes:
   db_volume:
-    #external: true
+    external: true
   db_backup_volume:
-    #external: true
+    external: true
   nats_volume:
     #external: true
   irods_volume:
-    #external: true
+    external: true
+  sftpgo_volume:
+    external: true
     
