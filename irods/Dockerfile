@@ -48,6 +48,11 @@ ARG IRODS_MAX_NUM_RE_PROCS=4
 ARG NATS_CLUSTER_ID=nats-streaming
 ARG NATS_CLIENT_ID=nats-streaming-client
 ARG NATS_URL=
+ARG IRODS_MOUNT_PATH=
+ARG IRODS_BISQUE_ADMIN_USER=bisque_admin
+ARG BISQUE_HOST=
+ARG BISQUE_ADMIN_USER=bisque_admin
+ARG BISQUE_ADMIN_PASSWORD=
 
 ### Configure ODBC and iRODS
 COPY irods/scripts/config-irods.sh /tmp/config-irods
@@ -65,6 +70,8 @@ COPY irods/rules/ipc-logic.re /etc/irods/
 COPY irods/rules/ipc-uuid.re /etc/irods/
 COPY irods/rules/ipc-json.re /etc/irods/
 COPY irods/rules/ipc-env.re.template /tmp/
+COPY irods/rules/bisque.re /etc/irods/
+COPY irods/rules/bisque-env.re.template /tmp/
 COPY irods/scripts/prep-re-script.sh /tmp/prep-re-script
 RUN /tmp/prep-re-script
 
@@ -72,5 +79,9 @@ RUN /tmp/prep-re-script
 COPY irods/rule_scripts/stanmsgsend.py /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/setuuid.sh /var/lib/irods/msiExecCmd_bin/
+COPY irods/rule_scripts/bisquepaths.py /var/lib/irods/msiExecCmd_bin/
+COPY irods/rule_scripts/bisque_config.template /tmp/
+COPY irods/scripts/prep-bisque-config.sh /tmp/prep-bisque-config
+RUN /tmp/prep-bisque-config
 
 CMD [ "/service.sh" ]

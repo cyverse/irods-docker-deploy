@@ -9,7 +9,8 @@
 
 main()
 {
-  expand_tmpl > /etc/irods/ipc-env.re
+  expand_ipc_tmpl > /etc/irods/ipc-env.re
+  expand_bisque_tmpl > /etc/irods/bisque-env.re
 }
 
 
@@ -25,7 +26,7 @@ escape()
 }
 
 
-expand_tmpl()
+expand_ipc_tmpl()
 {
   cat <<EOF | sed --file - /tmp/ipc-env.re.template
 s/\$IRODS_MAX_NUM_RE_PROCS/$(escape $IRODS_MAX_NUM_RE_PROCS)/g
@@ -36,6 +37,13 @@ s/\$NATS_URL/$(escape $NATS_URL)/g
 EOF
 }
 
+expand_bisque_tmpl()
+{
+  cat <<EOF | sed --file - /tmp/bisque-env.re.template
+s/\$IRODS_MOUNT_PATH/$(escape $IRODS_MOUNT_PATH)/g
+s/\$IRODS_BISQUE_ADMIN_USER/$(escape $IRODS_BISQUE_ADMIN_USER)/g
+EOF
+}
 
 set -e
 main

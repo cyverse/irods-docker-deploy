@@ -1,0 +1,4 @@
+[bqpath]
+bisque_host = "$BISQUE_HOST"
+bisque_admin_user = "$BISQUE_ADMIN_USER"
+bisque_admin_pass = "$BISQUE_ADMIN_PASSWORD"

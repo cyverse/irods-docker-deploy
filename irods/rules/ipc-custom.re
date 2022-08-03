@@ -18,6 +18,14 @@
 @include 'ipc-logic'
 @include 'ipc-services'
 
+# THIRD PARTY RULES
+#
+# Third party rule logic goes in its own file, and the file should be included
+# in this section. Third party rule logic should be implemented in a rule
+# prefixed with the name of the rule file and suffixed with the name of the rule
+# hook that will call the custome rule.
+
+@include 'bisque'
 
 # EXCLUSIVE RULES
 #
@@ -42,6 +50,9 @@ exclusive_acCreateCollByAdmin(*ParColl, *ChildColl) {
 #
 exclusive_acPostProcForCollCreate {
   *err = errormsg(ipc_archive_acPostProcForCollCreate, *msg);
+  if (*err < 0) { writeLine('serverLog', *msg); }
+
+  *err = errormsg(bisque_acPostProcForCollCreate, *msg);
   if (*err < 0) { writeLine('serverLog', *msg); }
 }
 
@@ -79,6 +90,7 @@ acCreateUser {
 
 
 acDataDeletePolicy {
+  bisque_acDataDeletePolicy;
   ipc_acDataDeletePolicy;
 }
 
@@ -180,11 +192,17 @@ acPostProcForRmColl { ipc_acPostProcForRmColl; }
 acPostProcForDelete {
   *err = errormsg(ipc_acPostProcForDelete, *msg);
   if (*err < 0) { writeLine('serverLog', *msg); }
+
+  *err = errormsg(bisque_acPostProcForDelete, *msg);
+  if (*err < 0) { writeLine('serverLog', *msg); }
 }
 
 
 acPostProcForObjRename(*SourceObject, *DestObject) {
   *err = errormsg(ipc_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
+  if (*err < 0) { writeLine('serverLog', *msg); }
+
+  *err = errormsg(bisque_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
   if (*err < 0) { writeLine('serverLog', *msg); }
 }
 
@@ -244,6 +262,12 @@ _ipc_mkDataObjSessVar(*Path) = 'ipc-data-obj-' ++ str(*Path)
 #   if (ipc_inStaging(/*path)) {
 #     *err = errormsg(ipc_dataObjCreated_staging(*User, *Zone, *DATA_OBJ_INFO), *msg);
 #     if (*err < 0) { writeLine('serverLog', *msg); }
+#   } else {
+#     *err = errormsg(ipc_dataObjCreated_default(*User, *Zone, *DATA_OBJ_INFO), *msg);
+#     if (*err < 0) { writeLine('serverLog', *msg); }
+#
+#     *err = errormsg(bisque_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO), *msg);
+#     if (*err < 0) { writeLine('serverLog', *msg); }
 #   }
 # }
 _ipc_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO, *Step) {
@@ -251,6 +275,11 @@ _ipc_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO, *Step) {
 
   *err = errormsg(ipc_dataObjCreated_default(*User, *Zone, *DATA_OBJ_INFO, *Step), *msg);
   if (*err < 0) { writeLine('serverLog', *msg); }
+
+  if (*Step != 'FINISH') {
+      *err = errormsg(bisque_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO), *msg);
+      if (*err < 0) { writeLine('serverLog', *msg); }
+  }
 }
 # XXX - ^^^
 

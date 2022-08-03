@@ -56,6 +56,11 @@ export IRODS_PORT="$IRODS_ZONE_PORT"
 export IRODS_ZONE="$IRODS_ZONE_NAME"
 export IRODS_SHARED=/"$IRODS_ZONE_NAME"/home/public
 
+export IRODS_MOUNT_PATH=/irods_mount
+export BISQUE_HOST=https://bisque.cyverse.org
+export BISQUE_ADMIN_USER=bisque_admin
+export BISQUE_ADMIN_PASSWORD=test_bisque_admin_password
+
 export DOCKER_IRODS_VOLUME=irods_volume
 export DOCKER_DB_VOLUME=db_volume
 export DOCKER_DB_BACKUP_VOLUME=db_backup_volume
