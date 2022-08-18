@@ -9,6 +9,7 @@
 
 main()
 {
+  mkdir -p /etc/bisque
   expand_tmpl > /etc/bisque/bisque_config
 }
 
