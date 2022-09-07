@@ -85,6 +85,7 @@ acCreateCollByAdmin(*ParColl, *ChildColl) {
 acCreateUser {
   ON ($otherUserType == 'rodsuser') {
     ipc_acCreateUser;
+    bisque_acCreateUser;
   }
 }
 

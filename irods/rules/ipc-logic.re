@@ -341,14 +341,10 @@ setAdminGroupPerm(*Item) {
 
 canModProtectedAVU(*User) {
   *canMod = false;
-  if (*User == 'bisque') {
+  *res = SELECT USER_ID WHERE USER_NAME = *User AND USER_TYPE = 'rodsadmin';
+  foreach (*record in *res) {
     *canMod = true;
-  } else {
-    *res = SELECT USER_ID WHERE USER_NAME = *User AND USER_TYPE = 'rodsadmin';
-    foreach (*record in *res) {
-      *canMod = true;
-      break;
-    }
+    break;
   }
   *canMod;
 }
@@ -485,7 +481,13 @@ cpUnprotectedUserAVUs(*User, *TargetType, *TargetName) =
 # Create a user for a Data Store service
 ipc_acCreateUser {
   msiCreateUser ::: msiRollback;
+  ipc_acCreateUserZoneCollections  :::  msiRollback;
+  msiAddUserToGroup("public")  :::  msiRollback;
   msiCommit;
+}
+
+ipc_acCreateUserZoneCollections {
+  acCreateCollByAdmin("/" ++ ipc_ZONE ++ "/home", $otherUserName);
 }
 
 

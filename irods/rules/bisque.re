@@ -18,7 +18,6 @@ _bisque_determineSrc(*BaseSrcColl, *BaseDestColl, *DestEntity) =
 _bisque_getHomeUser(*Path) =
   if *Path like regex '^/' ++ ipc_ZONE ++ '/home/shared($|/.*)' then ''
   else if *Path like regex '^/' ++ ipc_ZONE ++ '/home/[^/]+/.+' then elem(split(*Path, '/'), 2)
-  else if *Path like regex '^/' ++ ipc_ZONE ++ '/trash/home/[^/]+/.+' then elem(split(*Path, '/'), 3)
   else ''
 
 _bisque_getClient(*Author, *Path) =
@@ -240,4 +239,14 @@ bisque_acPostProcForDelete {
 
 bisque_dataObjCreated(*User, *_, *DATA_OBJ_INFO) {
   _bisque_handleObjCreate(*User, *DATA_OBJ_INFO.logical_path);
+}
+
+
+# a new bisque user is created
+bisque_acCreateUser {
+  # set usergroup
+  msiAddUserToGroup("bisque_group")
+  # set ACL
+  msiSetACL('default', 'write', bisque_IRODS_ADMIN_USER, "/" ++ ipc_ZONE ++ "/home/" ++ $otherUserName)
+  msiSetACL('recursive', 'inherit', bisque_IRODS_ADMIN_USER, "/" ++ ipc_ZONE ++ "/home/" ++ $otherUserName)
 }
