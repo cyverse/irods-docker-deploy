@@ -4,7 +4,9 @@
 #
 # It requires the following environment variables to be defined
 #
-# IRODS_MAX_NUM_RE_PROCS  The max number of rule engine processes
+# BISQUE_URL                The BisQue Service URL, https://bisque.ucsb.edu
+# BISQUE_ADMIN_USER         The admin username
+# BISQUE_ADMIN_PASSWORD     the admin user password
 
 
 main()
@@ -29,7 +31,7 @@ escape()
 expand_tmpl()
 {
   cat <<EOF | sed --file - /tmp/bisque_config.template
-s/\$BISQUE_HOST/$(escape $BISQUE_HOST)/g
+s/\$BISQUE_URL/$(escape $BISQUE_URL)/g
 s/\$BISQUE_ADMIN_USER/$(escape $BISQUE_ADMIN_USER)/g
 s/\$BISQUE_ADMIN_PASSWORD/$(escape $BISQUE_ADMIN_PASSWORD)/g
 EOF
