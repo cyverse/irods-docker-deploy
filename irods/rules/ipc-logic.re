@@ -488,6 +488,7 @@ ipc_acCreateUser {
 
 ipc_acCreateUserZoneCollections {
   acCreateCollByAdmin("/" ++ ipc_ZONE ++ "/home", $otherUserName);
+  acCreateCollByAdmin("/" ++ ipc_ZONE ++ "/trash/home", $otherUserName);
 }
 
 
