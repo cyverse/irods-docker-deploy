@@ -55,7 +55,7 @@ _bisque_Ln(*Permission, *Client, *Path) {
   *aliasArg = execCmdArg(*Client);
   *pathArg = execCmdArg(_bisque_mkIrodsUrl(*Path));
   *argStr = '--alias *aliasArg ln -P *pArg *pathArg';
-  *status = errorcode(msiExecCmd("bisquepaths.py", *argStr, ipc_RE_HOST, "null", "null", *out));
+  *status = errorcode(msiExecCmd("bisquepaths.py", *argStr, "null", "null", "null", *out));
 
   if (*status != 0) {
     msiGetStderrInExecCmdOut(*out, *resp);
@@ -92,7 +92,7 @@ _bisque_Mv(*Client, *OldPath, *NewPath) {
   *oldPathArg = execCmdArg(_bisque_mkIrodsUrl(*OldPath));
   *newPathArg = execCmdArg(_bisque_mkIrodsUrl(*NewPath));
   *argStr = '--alias *aliasArg mv *oldPathArg *newPathArg';
-  *status = errorcode(msiExecCmd('bisquepaths.py', *argStr, ipc_RE_HOST, 'null', 'null', *out));
+  *status = errorcode(msiExecCmd('bisquepaths.py', *argStr, "null", "null", "null", *out));
 
   if (*status != 0) {
     msiGetStderrInExecCmdOut(*out, *resp);
@@ -115,7 +115,7 @@ _bisque_Rm(*Client, *Path) {
   *aliasArg = execCmdArg(*Client);
   *pathArg = execCmdArg(_bisque_mkIrodsUrl(*Path));
   *argStr = '--alias *aliasArg rm *pathArg';
-  *status = errorcode(msiExecCmd("bisquepaths.py", *argStr, ipc_RE_HOST, "null", "null", *out));
+  *status = errorcode(msiExecCmd("bisquepaths.py", *argStr, "null", "null", "null", *out));
 
   if (*status != 0) {
     msiGetStderrInExecCmdOut(*out, *resp);
