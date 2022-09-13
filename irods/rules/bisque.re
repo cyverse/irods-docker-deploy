@@ -38,9 +38,11 @@ _bisque_isInBisque(*CollName, *DataName) =
 _bisque_isForBisque(*Author, *Path) =
   *Author != bisque_IRODS_ADMIN_USER
 
+# Creates iRODS URL 
+# this removes /zone/home part as it's not used in iRODS CSI Driver mount
 _bisque_mkIrodsUrl(*Path) =
   let *pathStr = '' in
-  let *pathArr = tl(split(*Path, '/'), 2) in
+  let *pathArr = tl(tl(split(*Path, '/'))) in
   let *_ = foreach (*elem in *pathArr) {
     *pathStr = *pathStr ++ '/' ++ *elem;
   }
