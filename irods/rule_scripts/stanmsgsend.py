@@ -8,17 +8,20 @@ import logging
 import os
 import sys
 import asyncio
+import uuid
 from nats.aio.client import Client as NATS
 from stan.aio.client import Client as STAN
 
 async def main(loop):
     logging.basicConfig(stream=sys.stdout)
 
+    uniqueID = uuid.uuid4().hex
+
     natsURL = sys.argv[1]
     clusterID = sys.argv[2]
-    clientID = sys.argv[3]
+    clientID = sys.argv[3] + "_" + uniqueID
     key = sys.argv[4]
-    body = sys.argv[5]
+    body = sys.argv[5]   
 
     nc = NATS()
     await nc.connect(natsURL, io_loop=loop)
