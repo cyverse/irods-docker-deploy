@@ -38,7 +38,13 @@ _bisque_isInBisque(*CollName, *DataName) =
 _bisque_isForBisque(*Author, *Path) =
   *Author != bisque_IRODS_ADMIN_USER
 
-_bisque_mkIrodsUrl(*Path) = bisque_IRODS_URL_BASE ++ *Path
+_bisque_mkIrodsUrl(*Path) =
+  let *pathStr = '' in
+  let *pathArr = tl(split(*Path, '/'), 2) in
+  let *_ = foreach (*elem in *pathArr) {
+    *pathStr = *pathStr ++ '/' ++ *elem;
+  }
+  in *pathStr
 
 _bisque_logMsg(*Msg) {
   writeLine('serverLog', 'BISQUE: *Msg');
