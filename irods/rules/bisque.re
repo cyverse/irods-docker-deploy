@@ -48,6 +48,13 @@ _bisque_mkIrodsUrl(*Path) =
   }
   in *pathStr
 
+
+# Check if BisQue has to take care of
+_bisque_isPathForBisque(*Path) =
+  if *Path like regex '^/' ++ ipc_ZONE ++ '/home($|/.*)' then true
+  else false
+
+
 _bisque_logMsg(*Msg) {
   writeLine('serverLog', 'BISQUE: *Msg');
 }
@@ -101,7 +108,7 @@ _bisque_Mv(*Client, *OldPath, *NewPath) {
   *oldPathArg = execCmdArg(_bisque_mkIrodsUrl(*OldPath));
   *newPathArg = execCmdArg(_bisque_mkIrodsUrl(*NewPath));
   *argStr = '--alias *aliasArg mv *oldPathArg *newPathArg';
-  *status = errorcode(msiExecCmd('bisquepaths.py', *argStr, "null", "null", "null", *out));
+  *status = errorcode(msiExecCmd("bisquepaths.py", *argStr, "null", "null", "null", *out));
 
   if (*status != 0) {
     msiGetStderrInExecCmdOut(*out, *resp);
@@ -175,8 +182,11 @@ _bisque_scheduleRm(*Client, *Path) {
 
 _bisque_handleNewObject(*Client, *Path) {
   ipc_giveAccessObj(bisque_IRODS_ADMIN_USER, 'write', *Path);
-  *perm = 'published';
-  _bisque_scheduleLn(*perm, *Client, *Path);
+
+  if (_bisque_isPathForBisque(*Path)) {
+    *perm = 'published';
+    _bisque_scheduleLn(*perm, *Client, *Path);
+  }
 }
 
 
@@ -213,7 +223,14 @@ bisque_acPostProcForObjRename(*SrcEntity, *DestEntity) {
 
         if (_bisque_isInBisque(*collName, *dataName)) {
           *srcSubColl = _bisque_determineSrc(*SrcEntity, *DestEntity, *collName);
-          _bisque_scheduleMv(*client, '*srcSubColl/*dataName', '*collName/*dataName');
+          
+          if (_bisque_isPathForBisque('*srcSubColl/*dataName') && _bisque_isPathForBisque('*collName/*dataName')) {
+            _bisque_scheduleMv(*client, '*srcSubColl/*dataName', '*collName/*dataName');
+          } else if (_bisque_isPathForBisque('*srcSubColl/*dataName')) {
+            _bisque_scheduleRm(*client, '*srcSubColl/*dataName');
+          } else if (_bisque_isPathForBisque('*collName/*dataName')) {
+            _bisque_handleNewObject(*client, '*collName/*dataName');
+          }
         } else if (*forBisque) {
           _bisque_handleNewObject(*client, '*collName/*dataName');
         }
@@ -223,7 +240,13 @@ bisque_acPostProcForObjRename(*SrcEntity, *DestEntity) {
     msiSplitPath(*DestEntity, *collName, *dataName);
 
     if (_bisque_isInBisque(*collName, *dataName)) {
-      _bisque_scheduleMv(*client, *SrcEntity, *DestEntity);
+      if (_bisque_isPathForBisque(*SrcEntity) && _bisque_isPathForBisque(*DestEntity)) {
+        _bisque_scheduleMv(*client, *SrcEntity, *DestEntity);
+      } else if (_bisque_isPathForBisque(*SrcEntity)) {
+        _bisque_scheduleRm(*client, *SrcEntity);
+      } else if (_bisque_isPathForBisque(*DestEntity)) {
+        _bisque_handleNewObject(*client, *DestEntity);
+      }
     } else if (*forBisque) {
       _bisque_handleNewObject(*client, *DestEntity);
     }
@@ -233,16 +256,16 @@ bisque_acPostProcForObjRename(*SrcEntity, *DestEntity) {
 
 # Add a call to this rule from inside the acDataDeletePolicy PEP.
 bisque_acDataDeletePolicy {
-  msiSplitPath($objPath, *collName, *dataName);
-  temporaryStorage.'bisque_$objPath' = if _bisque_isInBisque(*collName, *dataName) then 'rm' else ''
+  #msiSplitPath($objPath, *collName, *dataName);
+  #temporaryStorage.'bisque_$objPath' = if _bisque_isInBisque(*collName, *dataName) then 'rm' else ''
 }
 
 
 # Add a call to this rule from inside the acPostProcForDelete PEP.
 bisque_acPostProcForDelete {
-  if (temporaryStorage.'bisque_$objPath' == 'rm') {
-    _bisque_scheduleRm(_bisque_getClient($userNameClient, $objPath), $objPath);
-  }
+  #if (temporaryStorage.'bisque_$objPath' == 'rm') {
+  #  _bisque_scheduleRm(_bisque_getClient($userNameClient, $objPath), $objPath);
+  #}
 }
 
 
