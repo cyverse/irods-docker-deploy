@@ -16,7 +16,9 @@
 # DBMS_HOST            The FQDN or IP address of the PostgreSQL server
 # DBMS_PORT            The TCP port the PostgreSQL will listen on.
 # IRODS_SYSTEM_GROUP   The default group of the service account
+# IRODS_SYSTEM_USER    The system user for the iRODS process
 # IRODS_ADMIN_PASSWORD  The password used to authenticate the clerver user
+# IRODS_DEFAULT_RESOURCE      The name of the default resource to use
 
 
 main()
@@ -66,6 +68,8 @@ start()
       cat /var/lib/irods/log/rodsLog* >&2
       return 1
     fi
+
+    sed -i "s/demoResc/$IRODS_DEFAULT_RESOURCE/g" /etc/irods/core.re
 
     touch /var/lock/subsys/irods
 

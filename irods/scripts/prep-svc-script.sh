@@ -9,6 +9,7 @@
 # IRODS_SYSTEM_GROUP   The system group for the iRODS process
 # IRODS_SYSTEM_USER    The system user for the iRODS process
 # IRODS_ADMIN_PASSWORD  The password used to authenticate the clever user.
+# IRODS_DEFAULT_RESOURCE      The name of the default resource to use
 
 
 main()
@@ -38,6 +39,7 @@ s/\$DBMS_PORT/$(escape $DBMS_PORT)/g
 s/\$IRODS_SYSTEM_GROUP/$(escape $IRODS_SYSTEM_GROUP)/g
 s/\$IRODS_SYSTEM_USER/$(escape $IRODS_SYSTEM_USER)/g
 s/\$IRODS_ADMIN_PASSWORD/$(escape $IRODS_ADMIN_PASSWORD)/g
+s/\$IRODS_DEFAULT_RESOURCE/$(escape $IRODS_DEFAULT_RESOURCE)/g
 EOF
 }
 

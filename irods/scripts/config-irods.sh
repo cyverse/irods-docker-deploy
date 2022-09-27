@@ -44,7 +44,6 @@ readonly HostAccessControlCfg="$CfgDir"/host_access_control_config.json
 readonly HostsCfg="$CfgDir"/hosts_config.json
 readonly ServerCfg="$CfgDir"/server_config.json
 readonly SvcAccount="$CfgDir"/service_account.config
-readonly CoreRE="$CfgDir"/core.re
 
 readonly HomeDir=/var/lib/irods
 readonly Odbc="$HomeDir"/.odbc.ini
@@ -73,8 +72,6 @@ main()
 
   mkdir --parents "$EnvDir"
   mk_irods_env > "$EnvCfg"
-
-  sed -i "s/demoResc/$IRODS_DEFAULT_RESOURCE/g" "$CoreRE"
 
   ensure_ownership "$HomeDir"
   ensure_ownership "$CfgDir"
