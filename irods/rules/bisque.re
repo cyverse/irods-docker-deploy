@@ -281,5 +281,6 @@ bisque_acCreateUser {
   # set ACL
   msiSetACL('default', 'write', bisque_IRODS_ADMIN_USER, "/" ++ ipc_ZONE ++ "/home/" ++ $otherUserName)
   msiSetACL('default', 'write', bisque_IRODS_ADMIN_USER, "/" ++ ipc_ZONE ++ "/trash/home/" ++ $otherUserName)
+  msiSetACL('recursive', 'inherit', bisque_IRODS_ADMIN_USER, "/" ++ ipc_ZONE ++ "/home/" ++ $otherUserName)
   msiSetACL('recursive', 'inherit', bisque_IRODS_ADMIN_USER, "/" ++ ipc_ZONE ++ "/trash/home/" ++ $otherUserName)
 }
