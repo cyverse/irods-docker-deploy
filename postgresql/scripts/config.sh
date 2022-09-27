@@ -164,9 +164,9 @@ INSERT INTO R_RESC_MAIN (
   free_space, free_space_ts, resc_info, r_comment, resc_status, create_ts,    modify_ts,
   resc_context)
 VALUES (
-  $rescId, '$rescName', '$zoneName', 'unixfilesystem', 'cache',         '$server', '$vault',
-  '2000000',  '0$createTs',  '',        '',        'up',        '0$createTs', '0$createTs',
-  'minimum_free_space_for_create_in_bytes=1048576');
+  $rescId, '$rescName', '$zoneName', 'unixfilesystem', 'primary',         '$server', '$vault',
+  '',  '',  '',        '',        'up',        '0$createTs', '0$createTs',
+  '');
 EOF
 }
 
