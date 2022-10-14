@@ -59,7 +59,12 @@ main()
     backup_db)
       local db_backup_dir=/var/opt/db_backup
       local db_backup_file=pg_backup_`date +"%Y%m%d%H%M"`.sql
-      docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" exec -e PGPASSWORD="$DB_PASSWORD" dbms pg_dump -U "$DB_USER" -d "$DB_NAME" -F p -f "$db_backup_dir/$db_backup_file"
+      
+      if ! command -v docker-compose > /dev/null; then
+        docker compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" exec -e PGPASSWORD="$DB_PASSWORD" dbms pg_dump -U "$DB_USER" -d "$DB_NAME" -F p -f "$db_backup_dir/$db_backup_file"
+      else
+        docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" exec -e PGPASSWORD="$DB_PASSWORD" dbms pg_dump -U "$DB_USER" -d "$DB_NAME" -F p -f "$db_backup_dir/$db_backup_file"
+      fi
       
       if test -f "$LOCAL_DB_BACKUP_VOLUME_PATH/$db_backup_file"; then
         printf 'Created a DB backup file - "%s"\n' "$LOCAL_DB_BACKUP_VOLUME_PATH/$db_backup_file"
@@ -69,10 +74,18 @@ main()
 
       ;;
     start)
-      docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" up -d
+      if ! command -v docker-compose > /dev/null; then
+        docker compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" up -d
+      else
+        docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" up -d
+      fi
       ;;
     stop)
-      docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" down --remove-orphans
+      if ! command -v docker-compose > /dev/null; then
+        docker compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" down --remove-orphans
+      else
+        docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" down --remove-orphans
+      fi
       ;;
     *)
       printf 'Unknown command "%s"\n' "$action" >&2

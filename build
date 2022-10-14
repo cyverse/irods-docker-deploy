@@ -6,7 +6,6 @@
 # Builds docker images with the provided configuration values via config.inc.
 cfg=config.inc
 
-
 set -o errexit -o nounset -o pipefail
 
 if [[ "$OSTYPE" == "darwin"* ]]
@@ -34,7 +33,11 @@ main()
   docker build --file "$baseDir"/base/Dockerfile.ubuntu2004 --tag irods-docker-deploy-ubuntu2004 \
     "$baseDir"
 
-  docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" build
+  if ! command -v docker-compose > /dev/null; then
+    docker compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" build
+  else
+    docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" build
+  fi
 }
 
 

@@ -85,9 +85,7 @@ _bisque_Ln(*Permission, *Client, *Path) {
     msiString2KeyValPair(*kvStr, *kvs);
     msiGetValByKey(*kvs, 'resource_uniq', *qId);
     *id = substr(*qId, 1, strlen(*qId) - 1);
-    msiGetValByKey(*kvs, 'uri', *qURI);
-    *uri = substr(*qURI, 1, strlen(*qURI) - 1);
-
+    
     msiString2KeyValPair(_bisque_ID_ATTR ++ '=' ++ *id, *kv);
 
     msiSetKeyValuePairsToObj(*kv, *Path, '-d');

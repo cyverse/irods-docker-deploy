@@ -33,6 +33,7 @@ export IRODS_ADMIN_PASSWORD=test_rods_password
 export IRODS_BISQUE_ADMIN_USER=bisque_admin
 export IRODS_BISQUE_ADMIN_PASSWORD=test_bisque_admin_password
 
+export DBMS_CONF_HOST="$ENV_NAME"_dbms_1."$DOMAIN"
 export IRODS_CONF_HOST="$ENV_NAME"_irods_1."$DOMAIN"
 export NATS_CONF_HOST="$ENV_NAME"_nats_1."$DOMAIN"
 export SFTPGO_CONF_HOST="$ENV_NAME"_sftpgo_1."$DOMAIN"

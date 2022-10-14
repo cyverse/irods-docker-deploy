@@ -2,11 +2,16 @@ FROM irods-docker-deploy-ubuntu2004
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get install --yes --quiet=2 locales
+RUN apt-get update && \
+      apt-get install --no-install-recommends -y --quiet=2 locales && \
+      rm -rf /var/lib/apt/lists/*
+
 RUN locale-gen en_US.UTF-8
 
 ARG LC_COLLATE=C
-RUN apt-get install --yes --quiet=2 postgresql postgresql-client python3-psycopg2
+RUN apt-get update && \
+      apt-get install --yes --quiet=2 postgresql postgresql-client python3-psycopg2 && \
+      rm -rf /var/lib/apt/lists/*
 
 COPY postgresql/config/* /etc/postgresql/12/main/
 RUN chown postgres:postgres /etc/postgresql/12/main/*

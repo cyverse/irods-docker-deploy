@@ -17,6 +17,7 @@ services:
         IRODS_ADMIN_PASSWORD: "$IRODS_ADMIN_PASSWORD"
         IRODS_BISQUE_ADMIN_USER: "$IRODS_BISQUE_ADMIN_USER"
         IRODS_BISQUE_ADMIN_PASSWORD: "$IRODS_BISQUE_ADMIN_PASSWORD"
+    hostname: "$DBMS_CONF_HOST"
     volumes:
       - "db_volume:/var/lib/postgresql/12/main"
       - "db_backup_volume:/var/opt/db_backup"
