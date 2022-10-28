@@ -35,14 +35,17 @@ export IRODS_BISQUE_ADMIN_PASSWORD=test_bisque_admin_password
 
 export DBMS_CONF_HOST="$ENV_NAME"_dbms_1."$DOMAIN"
 export IRODS_CONF_HOST="$ENV_NAME"_irods_1."$DOMAIN"
-export NATS_CONF_HOST="$ENV_NAME"_nats_1."$DOMAIN"
 export SFTPGO_CONF_HOST="$ENV_NAME"_sftpgo_1."$DOMAIN"
+export RABBITMQ_CONF_HOST="$ENV_NAME"_rabbitmq_1."$DOMAIN"
 
-export NATS_PORT=4222
-export NATS_URL=nats://"$NATS_CONF_HOST":"$NATS_PORT"
-export NATS_CLUSTER_ID=irods-nats-streaming
-export NATS_CLIENT_ID=irods-nats-streaming-client
-export NATS_MANAGEMENT_PORT=8222
+export RABBITMQ_PORT=5672
+export RABBITMQ_MANAGEMENT_PORT=15672
+export RABBITMQ_ADMIN_USER=admin
+export RABBITMQ_ADMIN_PASSWORD=test_admin_password
+export RABBITMQ_IRODS_USER=irods
+export RABBITMQ_IRODS_PASSWORD=test_irods_password
+export RABBITMQ_IRODS_EXCHANGE=irods
+export RABBITMQ_URL=amqp://$RABBITMQ_IRODS_USER:$RABBITMQ_IRODS_PASSWORD@$RABBITMQ_CONF_HOST:$RABBITMQ_PORT/
 
 export SFTP_PORT=2022
 export SFTPGO_ADMIN_UI_PORT=8022
@@ -57,8 +60,9 @@ export IRODS_PORT="$IRODS_ZONE_PORT"
 export IRODS_ZONE="$IRODS_ZONE_NAME"
 export IRODS_SHARED=/"$IRODS_ZONE_NAME"/home/public
 
-export IRODS_MOUNT_PATH=/irods_mount
 export BISQUE_URL=https://bisque.cyverse.org
+export BISQUE_IRODS_BASE_URL=file:///irods_mount
+export BISQUE_IRODS_MOUNT_PATH=/"$IRODS_ZONE_NAME"/home
 export BISQUE_ADMIN_USER=bisque_admin
 export BISQUE_ADMIN_PASSWORD=test_bisque_admin_password
 

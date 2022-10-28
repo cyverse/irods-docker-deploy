@@ -67,31 +67,31 @@ _bisque_logMsg(*Msg) {
 _bisque_Ln(*Permission, *Client, *Path) {
   _bisque_logMsg("linking *Path for *Client with permission *Permission");
 
-  *pArg = execCmdArg(*Permission);
-  *aliasArg = execCmdArg(*Client);
-  *pathArg = execCmdArg(_bisque_mkIrodsUrl(*Path));
-  *argStr = '--alias *aliasArg ln -P *pArg *pathArg';
-  *status = errorcode(msiExecCmd("bisquepaths.py", *argStr, "null", "null", "null", *out));
+  #*pArg = execCmdArg(*Permission);
+  #*aliasArg = execCmdArg(*Client);
+  #*pathArg = execCmdArg(_bisque_mkIrodsUrl(*Path));
+  #*argStr = '--alias *aliasArg ln -P *pArg *pathArg';
+  #*status = errorcode(msiExecCmd("bisquepaths.py", *argStr, "null", "null", "null", *out));
 
-  if (*status != 0) {
-    msiGetStderrInExecCmdOut(*out, *resp);
-    _bisque_logMsg('FAILURE - *resp');
-    _bisque_logMsg('failed to link *Path for *Client with permission *Permission');
-    fail;
-  } else {
-    msiGetStdoutInExecCmdOut(*out, *resp);
-    *props = split(trimr(triml(*resp, ' '), '/'), ' ')
-    msiStrArray2String(*props, *kvStr);
-    msiString2KeyValPair(*kvStr, *kvs);
-    msiGetValByKey(*kvs, 'resource_uniq', *qId);
-    *id = substr(*qId, 1, strlen(*qId) - 1);
+  #if (*status != 0) {
+  #  msiGetStderrInExecCmdOut(*out, *resp);
+  #  _bisque_logMsg('FAILURE - *resp');
+  #  _bisque_logMsg('failed to link *Path for *Client with permission *Permission');
+  #  fail;
+  #} else {
+  #  msiGetStdoutInExecCmdOut(*out, *resp);
+  #  *props = split(trimr(triml(*resp, ' '), '/'), ' ')
+  #  msiStrArray2String(*props, *kvStr);
+  #  msiString2KeyValPair(*kvStr, *kvs);
+  #  msiGetValByKey(*kvs, 'resource_uniq', *qId);
+  #  *id = substr(*qId, 1, strlen(*qId) - 1);
     
-    msiString2KeyValPair(_bisque_ID_ATTR ++ '=' ++ *id, *kv);
+  #  msiString2KeyValPair(_bisque_ID_ATTR ++ '=' ++ *id, *kv);
 
-    msiSetKeyValuePairsToObj(*kv, *Path, '-d');
+  #  msiSetKeyValuePairsToObj(*kv, *Path, '-d');
 
-    _bisque_logMsg('linked *Path for *Client with permission *Permission');
-  }
+  #  _bisque_logMsg('linked *Path for *Client with permission *Permission');
+  #}
 }
 
 

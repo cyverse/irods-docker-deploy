@@ -10,14 +10,3 @@ ipc_MAX_NUM_RE_PROCS = $IRODS_MAX_NUM_RE_PROCS
 # the local iRODS zone
 ipc_ZONE: string
 ipc_ZONE = '$IRODS_ZONE_NAME'
-
-
-# the NATS
-ipc_NATS_URL: string
-ipc_NATS_URL = '$NATS_URL'
-
-ipc_NATS_CLUSTER_ID: string
-ipc_NATS_CLUSTER_ID = '$NATS_CLUSTER_ID'
-
-ipc_NATS_CLIENT_ID: string
-ipc_NATS_CLIENT_ID = '$NATS_CLIENT_ID'

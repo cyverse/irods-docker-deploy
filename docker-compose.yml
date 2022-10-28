@@ -22,27 +22,22 @@ services:
       - "db_volume:/var/lib/postgresql/12/main"
       - "db_backup_volume:/var/opt/db_backup"
 
-  nats:
-    image: nats-streaming:0.24.6
-    command:
-      - "--cluster_id"
-      - "$NATS_CLUSTER_ID"
-      - "--cluster_log_path"
-      - "/data/log"
-      - "--dir"
-      - "/data/msg"
-      - "--http_port"
-      - "$NATS_MANAGEMENT_PORT"
-      - "--port"
-      - "$NATS_PORT"
-      - "--store"
-      - "file"
-    hostname: "$NATS_CONF_HOST"
+  rabbitmq:
+    build:
+      context: .
+      dockerfile: rabbitmq/Dockerfile
+      args:
+        RABBITMQ_PORT: "$RABBITMQ_PORT"
+        RABBITMQ_MANAGEMENT_PORT: "$RABBITMQ_MANAGEMENT_PORT"
+        RABBITMQ_ADMIN_USER: "$RABBITMQ_ADMIN_USER"
+        RABBITMQ_ADMIN_PASSWORD: "$RABBITMQ_ADMIN_PASSWORD"
+        RABBITMQ_IRODS_USER: "$RABBITMQ_IRODS_USER"
+        RABBITMQ_IRODS_PASSWORD: "$RABBITMQ_IRODS_PASSWORD"
+        RABBITMQ_IRODS_EXCHANGE: "$RABBITMQ_IRODS_EXCHANGE"
+    hostname: "$RABBITMQ_CONF_HOST"
     ports:
-      - "$NATS_PORT:$NATS_PORT"
-      - "$NATS_MANAGEMENT_PORT:$NATS_MANAGEMENT_PORT"
-    volumes:
-      - "nats_volume:/data"
+      - "$RABBITMQ_PORT:$RABBITMQ_PORT"
+      - "$RABBITMQ_MANAGEMENT_PORT:$RABBITMQ_MANAGEMENT_PORT"
 
   irods:
     build:
@@ -71,12 +66,12 @@ services:
         IRODS_ADMIN_USER: "$IRODS_ADMIN_USER"
         IRODS_ADMIN_PASSWORD: "$IRODS_ADMIN_PASSWORD"
         IRODS_MAX_NUM_RE_PROCS: "$IRODS_MAX_NUM_RE_PROCS"
-        NATS_URL: "$NATS_URL"
-        NATS_CLUSTER_ID: "$NATS_CLUSTER_ID"
-        NATS_CLIENT_ID: "$NATS_CLIENT_ID"
-        IRODS_MOUNT_PATH: "$IRODS_MOUNT_PATH"
         IRODS_BISQUE_ADMIN_USER: "$IRODS_BISQUE_ADMIN_USER"
+        RABBITMQ_URL: "$RABBITMQ_URL"
+        RABBITMQ_IRODS_EXCHANGE: "$RABBITMQ_IRODS_EXCHANGE"
         BISQUE_URL: "$BISQUE_URL"
+        BISQUE_IRODS_BASE_URL: "$BISQUE_IRODS_BASE_URL"
+        BISQUE_IRODS_MOUNT_PATH: "$BISQUE_IRODS_MOUNT_PATH"
         BISQUE_ADMIN_USER: "$BISQUE_ADMIN_USER"
         BISQUE_ADMIN_PASSWORD: "$BISQUE_ADMIN_PASSWORD"
     hostname: "$IRODS_CONF_HOST"
@@ -87,7 +82,7 @@ services:
       - "irods_volume:$IRODS_VAULT"
     depends_on:
       - dbms
-      - nats
+      - rabbitmq
   
   sftpgo:
     build:
@@ -127,10 +122,8 @@ volumes:
     external: true
   db_backup_volume:
     external: true
-  nats_volume:
-    #external: true
   irods_volume:
     external: true
   sftpgo_volume:
     external: true
-    
+  

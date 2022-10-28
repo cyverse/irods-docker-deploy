@@ -1,0 +1,82 @@
+{
+    "rabbit_version": "3.9.24",
+    "rabbitmq_version": "3.9.24",
+    "product_name": "RabbitMQ",
+    "product_version": "3.9.24",
+    "users": [
+        {
+            "name": "$RABBITMQ_ADMIN_USER",
+            "password_hash": "$RABBITMQ_ADMIN_PASSWORD_HASH",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": [
+                "administrator"
+            ],
+            "limits": {}
+        },
+        {
+            "name": "$RABBITMQ_IRODS_USER",
+            "password_hash": "$RABBITMQ_IRODS_PASSWORD_HASH",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": [],
+            "limits": {}
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "/"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "$RABBITMQ_IRODS_USER",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        },
+        {
+            "user": "$RABBITMQ_ADMIN_USER",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "topic_permissions": [
+        {
+            "user": "$RABBITMQ_IRODS_USER",
+            "vhost": "/",
+            "exchange": "",
+            "write": ".*",
+            "read": ".*"
+        },
+        {
+            "user": "$RABBITMQ_ADMIN_USER",
+            "vhost": "/",
+            "exchange": "",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "parameters": [],
+    "global_parameters": [
+        {
+            "name": "internal_cluster_id",
+            "value": "rabbitmq-cluster-id-Ezfd-hbhM-ggJHvNpPHa3Q"
+        }
+    ],
+    "policies": [],
+    "queues": [],
+    "exchanges": [
+        {
+            "name": "$RABBITMQ_IRODS_EXCHANGE",
+            "vhost": "/",
+            "type": "topic",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": []
+}

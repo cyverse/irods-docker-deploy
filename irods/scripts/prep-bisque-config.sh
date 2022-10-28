@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# This script creates the *.re rules for an catalog service provider.
+# This script creates the configuration file for bisque.
 #
 # It requires the following environment variables to be defined
 #
 # BISQUE_URL                The BisQue Service URL, https://bisque.ucsb.edu
 # BISQUE_ADMIN_USER         The admin username
-# BISQUE_ADMIN_PASSWORD     the admin user password
+# BISQUE_ADMIN_PASSWORD     The admin user password
 
 
 main()

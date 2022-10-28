@@ -4,11 +4,11 @@
 #
 # It requires the following environment variables to be defined
 #
-# DBMS_HOST            The FQDN or IP address of the PostgreSQL server
-# DBMS_PORT            The TCP port the PostgreSQL will listen on.
-# IRODS_SYSTEM_GROUP   The system group for the iRODS process
-# IRODS_SYSTEM_USER    The system user for the iRODS process
-# IRODS_ADMIN_PASSWORD  The password used to authenticate the clever user.
+# DBMS_HOST                   The FQDN or IP address of the PostgreSQL server
+# DBMS_PORT                   The TCP port the PostgreSQL will listen on.
+# IRODS_SYSTEM_GROUP          The system group for the iRODS process
+# IRODS_SYSTEM_USER           The system user for the iRODS process
+# IRODS_ADMIN_PASSWORD        The password used to authenticate the clever user.
 # IRODS_DEFAULT_RESOURCE      The name of the default resource to use
 
 

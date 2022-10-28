@@ -5,6 +5,7 @@ RUN yum --assumeyes install \
       jq python-pip python-requests python-virtualenv \
       ### Install software needed build image
       python3 \
+      curl \
       ### Install PostgreSQL ODBC connector
       https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
       rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG && \
@@ -20,8 +21,13 @@ RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
       http://people.renci.org/~dmoore/irods_netcdf/packages_2021_03_24/irods-netcdf-icommands-4.2.8.0-centos-7-x86_64.rpm \
       http://people.renci.org/~dmoore/irods_netcdf/packages_2021_03_24/irods-netcdf-server_modules-4.2.8.0-centos-7-x86_64.rpm
 
-### Install libraries required by command scripts
-RUN pip3 --disable-pip-version-check install protobuf==3.19.4 asyncio-nats-streaming
+### Install irods-rule-async-exec-cmd
+RUN mkdir -p /tmp/irods-rule-async-exec-cmd
+RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.1.0_rc5/irods-rule-async-exec-cmd-svc-v0.1.0_rc5-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz
+RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.1.0_rc5/irods-rule-async-exec-cmd-v0.1.0_rc5-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz
+RUN tar zxvf /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz -C /tmp/irods-rule-async-exec-cmd && cp /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc /usr/local/bin
+RUN tar zxvf /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz -C /tmp/irods-rule-async-exec-cmd && cp /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd /usr/local/bin
+RUN rm -rf /tmp/irods-rule-async-exec-cmd
 
 ARG DB_NAME=ICAT
 ARG DB_PASSWORD=testpassword
@@ -45,14 +51,14 @@ ARG IRODS_ADMIN_PASSWORD=rods
 ARG IRODS_ZONE_PORT=1247
 ARG IRODS_ADMIN_USER=rods
 ARG IRODS_MAX_NUM_RE_PROCS=4
-ARG NATS_CLUSTER_ID=nats-streaming
-ARG NATS_CLIENT_ID=nats-streaming-client
-ARG NATS_URL=
-ARG IRODS_MOUNT_PATH=
+ARG RABBITMQ_URL=
+ARG RABBITMQ_IRODS_EXCHANGE=irods
 ARG IRODS_BISQUE_ADMIN_USER=bisque_admin
 ARG BISQUE_URL=
 ARG BISQUE_ADMIN_USER=bisque_admin
 ARG BISQUE_ADMIN_PASSWORD=
+ARG BISQUE_IRODS_BASE_URL=
+ARG BISQUE_IRODS_MOUNT_PATH=/
 
 ### Configure ODBC and iRODS
 COPY irods/scripts/config-irods.sh /tmp/config-irods
@@ -76,12 +82,17 @@ COPY irods/scripts/prep-re-script.sh /tmp/prep-re-script
 RUN /tmp/prep-re-script
 
 ### Install scripts used by iRODS Rules
-COPY irods/rule_scripts/stanmsgsend.py /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/setuuid.sh /var/lib/irods/msiExecCmd_bin/
+COPY irods/rule_scripts/irods-rule-async-exec-cmd.sh /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/bisquepaths.py /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/bisque_config.template /tmp/
 COPY irods/scripts/prep-bisque-config.sh /tmp/prep-bisque-config
 RUN /tmp/prep-bisque-config
+
+### Install scripts used by irods-rule-async-exec-cmd
+COPY irods/rule_async_exec_cmd/config.yml.template /tmp/rule_async_exec_cmd_config.yml.template
+COPY irods/scripts/prep-rule-async-exec-cmd-config.sh /tmp/prep-rule-async-exec-cmd-config
+RUN /tmp/prep-rule-async-exec-cmd-config
 
 CMD [ "/service.sh" ]

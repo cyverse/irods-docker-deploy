@@ -5,6 +5,9 @@
 # It requires the following environment variables to be defined
 #
 # IRODS_MAX_NUM_RE_PROCS  The max number of rule engine processes
+# IRODS_ZONE_NAME         The zone name of iRODS service
+# IRODS_BISQUE_ADMIN_USER
+# BISQUE_IRODS_BASE_URL
 
 
 main()
@@ -31,16 +34,13 @@ expand_ipc_tmpl()
   cat <<EOF | sed --file - /tmp/ipc-env.re.template
 s/\$IRODS_MAX_NUM_RE_PROCS/$(escape $IRODS_MAX_NUM_RE_PROCS)/g
 s/\$IRODS_ZONE_NAME/$(escape $IRODS_ZONE_NAME)/g
-s/\$NATS_CLUSTER_ID/$(escape $NATS_CLUSTER_ID)/g
-s/\$NATS_CLIENT_ID/$(escape $NATS_CLIENT_ID)/g
-s/\$NATS_URL/$(escape $NATS_URL)/g
 EOF
 }
 
 expand_bisque_tmpl()
 {
   cat <<EOF | sed --file - /tmp/bisque-env.re.template
-s/\$IRODS_MOUNT_PATH/$(escape $IRODS_MOUNT_PATH)/g
+s/\$BISQUE_IRODS_BASE_URL/$(escape $BISQUE_IRODS_BASE_URL)/g
 s/\$IRODS_BISQUE_ADMIN_USER/$(escape $IRODS_BISQUE_ADMIN_USER)/g
 EOF
 }

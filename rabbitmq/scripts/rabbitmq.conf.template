@@ -1,0 +1,5 @@
+loopback_users.guest = false
+listeners.tcp.default = $RABBITMQ_PORT
+management.listener.port = $RABBITMQ_MANAGEMENT_PORT
+management.listener.ssl = false
+management.load_definitions = /etc/rabbitmq/definitions.json
