@@ -3,8 +3,5 @@
 # © 2021 The Arizona Board of Regents on behalf of The University of Arizona. 
 # For license information, see https://cyverse.org/license.
 
-bisque_IRODS_URL_BASE: string
-bisque_IRODS_URL_BASE = '$BISQUE_IRODS_BASE_URL'
-
 bisque_IRODS_ADMIN_USER: string
 bisque_IRODS_ADMIN_USER = '$IRODS_BISQUE_ADMIN_USER'

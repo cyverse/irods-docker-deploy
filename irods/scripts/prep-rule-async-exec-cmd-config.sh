@@ -10,7 +10,7 @@
 # BISQUE_ADMIN_USER         The BisQue admin username 
 # BISQUE_ADMIN_PASSWORD     The BisQue admin user password
 # BISQUE_IRODS_BASE_URL     The iRODS base URL for BisQue service, file:// or irods://
-# BISQUE_IRODS_MOUNT_PATH   The iRODS path mounted to BisQue, "/" or "/iplant/home"
+# BISQUE_IRODS_ROOT_PATH    The iRODS root path mounted to BisQue, "/" or "/iplant/home"
 # IRODS_HOST                The FQDN or IP address of the server being configured.
 # IRODS_ZONE_PORT           The main TCP port used by the zone for communication                           communication.
 # IRODS_ZONE_NAME           The name of the iRODS zone.
@@ -46,7 +46,7 @@ s/\$BISQUE_URL/$(escape $BISQUE_URL)/g
 s/\$BISQUE_ADMIN_USER/$(escape $BISQUE_ADMIN_USER)/g
 s/\$BISQUE_ADMIN_PASSWORD/$(escape $BISQUE_ADMIN_PASSWORD)/g
 s/\$BISQUE_IRODS_BASE_URL/$(escape $BISQUE_IRODS_BASE_URL)/g
-s/\$BISQUE_IRODS_MOUNT_PATH/$(escape $BISQUE_IRODS_MOUNT_PATH)/g
+s/\$BISQUE_IRODS_ROOT_PATH/$(escape $BISQUE_IRODS_ROOT_PATH)/g
 s/\$IRODS_HOST/$(escape $IRODS_HOST)/g
 s/\$IRODS_ZONE_PORT/$(escape $IRODS_ZONE_PORT)/g
 s/\$IRODS_ZONE_NAME/$(escape $IRODS_ZONE_NAME)/g

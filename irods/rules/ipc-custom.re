@@ -91,7 +91,6 @@ acCreateUser {
 
 
 acDataDeletePolicy {
-  #bisque_acDataDeletePolicy;
   ipc_acDataDeletePolicy;
 }
 
@@ -193,17 +192,11 @@ acPostProcForRmColl { ipc_acPostProcForRmColl; }
 acPostProcForDelete {
   *err = errormsg(ipc_acPostProcForDelete, *msg);
   if (*err < 0) { writeLine('serverLog', *msg); }
-
-  *err = errormsg(bisque_acPostProcForDelete, *msg);
-  if (*err < 0) { writeLine('serverLog', *msg); }
 }
 
 
 acPostProcForObjRename(*SourceObject, *DestObject) {
   *err = errormsg(ipc_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
-  if (*err < 0) { writeLine('serverLog', *msg); }
-
-  *err = errormsg(bisque_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
   if (*err < 0) { writeLine('serverLog', *msg); }
 }
 

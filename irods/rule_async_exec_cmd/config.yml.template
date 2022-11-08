@@ -6,8 +6,9 @@ bisque_config:
   url: $BISQUE_URL
   admin_username: $BISQUE_ADMIN_USER
   admin_password: $BISQUE_ADMIN_PASSWORD
+  irods_zone: $IRODS_ZONE_NAME
   irods_base_url: $BISQUE_IRODS_BASE_URL
-  irods_mount_path: $BISQUE_IRODS_MOUNT_PATH
+  irods_root_path: $BISQUE_IRODS_ROOT_PATH
 
 irods_config:
   host: $IRODS_HOST

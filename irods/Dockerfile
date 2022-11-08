@@ -23,8 +23,8 @@ RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
 
 ### Install irods-rule-async-exec-cmd
 RUN mkdir -p /tmp/irods-rule-async-exec-cmd
-RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.1.0_rc5/irods-rule-async-exec-cmd-svc-v0.1.0_rc5-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz
-RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.1.0_rc5/irods-rule-async-exec-cmd-v0.1.0_rc5-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz
+RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.1.0_rc13/irods-rule-async-exec-cmd-svc-v0.1.0_rc13-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz
+RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.1.0_rc13/irods-rule-async-exec-cmd-v0.1.0_rc13-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz
 RUN tar zxvf /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz -C /tmp/irods-rule-async-exec-cmd && cp /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc /usr/local/bin
 RUN tar zxvf /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz -C /tmp/irods-rule-async-exec-cmd && cp /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd /usr/local/bin
 RUN rm -rf /tmp/irods-rule-async-exec-cmd
@@ -58,7 +58,7 @@ ARG BISQUE_URL=
 ARG BISQUE_ADMIN_USER=bisque_admin
 ARG BISQUE_ADMIN_PASSWORD=
 ARG BISQUE_IRODS_BASE_URL=
-ARG BISQUE_IRODS_MOUNT_PATH=/
+ARG BISQUE_IRODS_ROOT_PATH=/
 
 ### Configure ODBC and iRODS
 COPY irods/scripts/config-irods.sh /tmp/config-irods

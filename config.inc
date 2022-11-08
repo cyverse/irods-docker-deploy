@@ -62,7 +62,7 @@ export IRODS_SHARED=/"$IRODS_ZONE_NAME"/home/public
 
 export BISQUE_URL=https://bisque.cyverse.org
 export BISQUE_IRODS_BASE_URL=file:///irods_mount
-export BISQUE_IRODS_MOUNT_PATH=/"$IRODS_ZONE_NAME"/home
+export BISQUE_IRODS_ROOT_PATH=/"$IRODS_ZONE_NAME"/home
 export BISQUE_ADMIN_USER=bisque_admin
 export BISQUE_ADMIN_PASSWORD=test_bisque_admin_password
 

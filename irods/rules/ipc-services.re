@@ -57,6 +57,7 @@ ipc_isForService(*SvcUser, *SvcColl, *Path) =
   *strPath like regex _ipc_HOME ++ '/[^/]+/*SvcColl($|/.*)'
   && !(*strPath like _ipc_HOME ++ '/*SvcUser/*')
   && !(*strPath like _ipc_HOME ++ '/shared/*')
+  && !(*strPath like _ipc_HOME ++ '/public/*')
 
 
 # This rule gives access to a service for a collection and everything in it.
