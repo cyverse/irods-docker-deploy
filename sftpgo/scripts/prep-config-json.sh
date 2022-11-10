@@ -4,6 +4,7 @@
 #
 # It requires the following environment variables to be defined
 #
+# WEBDAV_PORT                     The TCP port for the webdav service
 # SFTP_PORT                       The TCP port for the sftp service
 # SFTPGO_ADMIN_UI_PORT            The TCP port for web admin service
 # SFTPGO_VAULT                    The local path for storing user data and log
@@ -31,6 +32,7 @@ escape()
 expand_tmpl()
 {
   cat <<EOF | sed --file - /tmp/sftpgo.json.template
+s/\$WEBDAV_PORT/$(escape $WEBDAV_PORT)/g
 s/\$SFTP_PORT/$(escape $SFTP_PORT)/g
 s/\$SFTPGO_ADMIN_UI_PORT/$(escape $SFTPGO_ADMIN_UI_PORT)/g
 s/\$SFTPGO_VAULT/$(escape $SFTPGO_VAULT)/g

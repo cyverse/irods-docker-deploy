@@ -120,7 +120,7 @@
   "webdavd": {
     "bindings": [
       {
-        "port": 0,
+        "port": $WEBDAV_PORT,
         "address": "",
         "enable_https": false,
         "min_tls_version": 12,
@@ -145,7 +145,7 @@
     },
     "cache": {
       "users": {
-        "expiration_time": 0,
+        "expiration_time": 60,
         "max_size": 50
       },
       "mime_types": {

@@ -89,6 +89,7 @@ services:
       context: .
       dockerfile: sftpgo/Dockerfile
       args:
+        WEBDAV_PORT: "$WEBDAV_PORT"
         SFTP_PORT: "$SFTP_PORT"
         SFTPGO_ADMIN_UI_PORT: "$SFTPGO_ADMIN_UI_PORT"
         SFTPGO_VAULT: "$SFTPGO_VAULT"
@@ -106,6 +107,7 @@ services:
       - "IRODS_SHARED=$IRODS_SHARED"
     hostname: "$SFTPGO_CONF_HOST"
     ports:
+      - "$WEBDAV_PORT:$WEBDAV_PORT"
       - "$SFTP_PORT:$SFTP_PORT"
       - "$SFTPGO_ADMIN_UI_PORT:$SFTPGO_ADMIN_UI_PORT"
     volumes:
