@@ -8,6 +8,7 @@
 # SFTP_PORT                       The TCP port for the sftp service
 # SFTPGO_ADMIN_UI_PORT            The TCP port for web admin service
 # SFTPGO_VAULT                    The local path for storing user data and log
+# SFTPGO_HOME_PATH                The local path for storing user home data
 
 
 main()
@@ -36,6 +37,7 @@ s/\$WEBDAV_PORT/$(escape $WEBDAV_PORT)/g
 s/\$SFTP_PORT/$(escape $SFTP_PORT)/g
 s/\$SFTPGO_ADMIN_UI_PORT/$(escape $SFTPGO_ADMIN_UI_PORT)/g
 s/\$SFTPGO_VAULT/$(escape $SFTPGO_VAULT)/g
+s/\$SFTPGO_HOME_PATH/$(escape $SFTPGO_HOME_PATH)/g
 EOF
 }
 
