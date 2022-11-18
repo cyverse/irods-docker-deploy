@@ -53,6 +53,7 @@ start()
   if [ -e /var/lib/irods/.irods/irods_environment.json ]
   then
     chown --recursive "$IRODS_SYSTEM_USER":"$IRODS_SYSTEM_GROUP" /etc/irods /var/lib/irods
+    chown --recursive "$IRODS_SYSTEM_USER":"$IRODS_SYSTEM_GROUP" /var/lib/irods_rule_async_exec_cmd
 
     until exec 3<> /dev/tcp/"$DBMS_HOST"/"$DBMS_PORT"
     do
@@ -66,7 +67,7 @@ start()
     # Start irods-rule-async-exec-cmd-svc
     if ! su --command 'irods-rule-async-exec-cmd-svc' --login "$IRODS_SYSTEM_USER"
     then
-      cat /tmp/irods_rule_async_exec_cmd.log.* >&2
+      cat /var/lib/irods_rule_async_exec_cmd/irods_rule_async_exec_cmd.log.* >&2
       return 1
     fi
 

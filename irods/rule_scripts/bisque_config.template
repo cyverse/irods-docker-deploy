@@ -1,4 +1,0 @@
-[bqpath]
-bisque_host = $BISQUE_URL
-bisque_admin_user = $BISQUE_ADMIN_USER
-bisque_admin_pass = $BISQUE_ADMIN_PASSWORD

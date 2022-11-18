@@ -17,4 +17,5 @@ irods_config:
   admin_username: $IRODS_ADMIN_USER
   admin_password: $IRODS_ADMIN_PASSWORD
 
+data_root_path: /var/lib/irods_rule_async_exec_cmd
 debug: true

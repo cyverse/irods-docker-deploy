@@ -23,11 +23,12 @@ RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
 
 ### Install irods-rule-async-exec-cmd
 RUN mkdir -p /tmp/irods-rule-async-exec-cmd
-RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.1.0_rc15/irods-rule-async-exec-cmd-svc-v0.1.0_rc15-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz
-RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.1.0_rc15/irods-rule-async-exec-cmd-v0.1.0_rc15-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz
+RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.2.0/irods-rule-async-exec-cmd-svc-v0.2.0-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz
+RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.2.0/irods-rule-async-exec-cmd-v0.2.0-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz
 RUN tar zxvf /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz -C /tmp/irods-rule-async-exec-cmd && cp /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc /usr/local/bin
 RUN tar zxvf /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz -C /tmp/irods-rule-async-exec-cmd && cp /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd /usr/local/bin
 RUN rm -rf /tmp/irods-rule-async-exec-cmd
+RUN mkdir -p /var/lib/irods_rule_async_exec_cmd
 
 ARG DB_NAME=ICAT
 ARG DB_PASSWORD=testpassword
@@ -85,10 +86,6 @@ RUN /tmp/prep-re-script
 COPY irods/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/setuuid.sh /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/irods-rule-async-exec-cmd.sh /var/lib/irods/msiExecCmd_bin/
-COPY irods/rule_scripts/bisquepaths.py /var/lib/irods/msiExecCmd_bin/
-COPY irods/rule_scripts/bisque_config.template /tmp/
-COPY irods/scripts/prep-bisque-config.sh /tmp/prep-bisque-config
-RUN /tmp/prep-bisque-config
 
 ### Install scripts used by irods-rule-async-exec-cmd
 COPY irods/rule_async_exec_cmd/config.yml.template /tmp/rule_async_exec_cmd_config.yml.template

@@ -105,7 +105,7 @@ retrieveUUID(*EntityType, *EntityPath) {
 #  *Msg    (string) the message to send
 #
 # Remote Execution:
-#  It executes the amqptopicsend.py command script on the rule engine host
+#  It executes the irods-rule-async-exec-cmd.sh command script on the rule engine host
 #
 sendMsg(*Topic, *Msg) {
   *topicArg = execCmdArg(*Topic);
