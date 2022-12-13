@@ -8,4 +8,4 @@
 # PARAMETERS:
 #  subcmd  Either "send_msg" or "bisque_link"
 
-/usr/local/bin/irods-rule-async-exec-cmd $@
+/usr/local/bin/irods-rule-async-exec-cmd "$@"
