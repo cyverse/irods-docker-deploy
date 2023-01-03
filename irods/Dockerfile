@@ -86,7 +86,7 @@ RUN /tmp/prep-re-script
 ### Install scripts used by iRODS Rules
 COPY irods/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/setuuid.sh /var/lib/irods/msiExecCmd_bin/
-COPY /usr/local/bin/irods-rule-async-exec-cmd /var/lib/irods/msiExecCmd_bin/
+RUN /usr/local/bin/irods-rule-async-exec-cmd /var/lib/irods/msiExecCmd_bin/
 
 ### Install scripts used by irods-rule-async-exec-cmd
 COPY irods/rule_async_exec_cmd/config.yml.template /tmp/rule_async_exec_cmd_config.yml.template
