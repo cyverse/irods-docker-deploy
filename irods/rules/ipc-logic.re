@@ -105,7 +105,7 @@ retrieveUUID(*EntityType, *EntityPath) {
 #  *Msg    (string) the message to send
 #
 # Remote Execution:
-#  It executes the irods-rule-async-exec-cmd.sh command script on the rule engine host
+#  It executes the irods-rule-async-exec-cmd command on the rule engine host
 #
 sendMsg(*Topic, *Msg) {
   *topicArg = execCmdArg(*Topic);
@@ -113,7 +113,7 @@ sendMsg(*Topic, *Msg) {
   *argStr = 'send_msg *topicArg *msgArg';
 
   *status = errormsg(
-    msiExecCmd('irods-rule-async-exec-cmd.sh', *argStr, 'null', 'null', 'null', *out), *errMsg );
+    msiExecCmd('irods-rule-async-exec-cmd', *argStr, 'null', 'null', 'null', *out), *errMsg );
 
   if (*status < 0) {
     writeLine("serverLog", "Failed to send message: *errMsg");

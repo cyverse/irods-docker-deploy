@@ -22,9 +22,10 @@ RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
       http://people.renci.org/~dmoore/irods_netcdf/packages_2021_03_24/irods-netcdf-server_modules-4.2.8.0-centos-7-x86_64.rpm
 
 ### Install irods-rule-async-exec-cmd
+ARG IRODS_RULE_ASYNC_EXEC_CMD_VER=v0.2.4
 RUN mkdir -p /tmp/irods-rule-async-exec-cmd
-RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.2.3/irods-rule-async-exec-cmd-svc-v0.2.3-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz
-RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/v0.2.3/irods-rule-async-exec-cmd-v0.2.3-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz
+RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/${IRODS_RULE_ASYNC_EXEC_CMD_VER}/irods-rule-async-exec-cmd-svc-${IRODS_RULE_ASYNC_EXEC_CMD_VER}-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz
+RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/${IRODS_RULE_ASYNC_EXEC_CMD_VER}/irods-rule-async-exec-cmd-${IRODS_RULE_ASYNC_EXEC_CMD_VER}-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz
 RUN tar zxvf /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz -C /tmp/irods-rule-async-exec-cmd && cp /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc /usr/local/bin
 RUN tar zxvf /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz -C /tmp/irods-rule-async-exec-cmd && cp /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd /usr/local/bin
 RUN rm -rf /tmp/irods-rule-async-exec-cmd
@@ -85,7 +86,7 @@ RUN /tmp/prep-re-script
 ### Install scripts used by iRODS Rules
 COPY irods/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
 COPY irods/rule_scripts/setuuid.sh /var/lib/irods/msiExecCmd_bin/
-COPY irods/rule_scripts/irods-rule-async-exec-cmd.sh /var/lib/irods/msiExecCmd_bin/
+COPY /usr/local/bin/irods-rule-async-exec-cmd /var/lib/irods/msiExecCmd_bin/
 
 ### Install scripts used by irods-rule-async-exec-cmd
 COPY irods/rule_async_exec_cmd/config.yml.template /tmp/rule_async_exec_cmd_config.yml.template
