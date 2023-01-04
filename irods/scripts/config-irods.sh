@@ -31,11 +31,12 @@
 # IRODS_ZONE_KEY              The shared secred used for authentication during
 #                             server-to-server communication
 # IRODS_ZONE_NAME             The name of the iRODS zone.
-# IRODS_ADMIN_PASSWORD         The password used to authenticate the
+# IRODS_ADMIN_PASSWORD        The password used to authenticate the
 #                             IRODS_ADMIN_USER user.
 # IRODS_ZONE_PORT             The main TCP port used by the zone for
 #                             communication.
-# IRODS_ADMIN_USER             The main rodsadmin user.
+# IRODS_ADMIN_USER            The main rodsadmin user.
+
 
 set -o errexit -o nounset -o pipefail
 
