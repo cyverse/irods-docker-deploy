@@ -17,6 +17,7 @@ ADD https://packages.irods.org/renci-irods.yum.repo /etc/yum.repos.d/renci-irods
 RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
       yum --assumeyes install \
       irods-server-4.2.8 irods-database-plugin-postgres-4.2.8 \
+      https://packages.irods.org/yum/pool/centos7/x86_64/irods-rule-engine-plugin-audit-amqp-4.2.8.0-centos7-x86_64.rpm \
       http://people.renci.org/~dmoore/irods_netcdf/packages_2021_03_24/irods-netcdf-client_modules-4.2.8.0-centos-7-x86_64.rpm \
       http://people.renci.org/~dmoore/irods_netcdf/packages_2021_03_24/irods-netcdf-icommands-4.2.8.0-centos-7-x86_64.rpm \
       http://people.renci.org/~dmoore/irods_netcdf/packages_2021_03_24/irods-netcdf-server_modules-4.2.8.0-centos-7-x86_64.rpm
@@ -53,8 +54,12 @@ ARG IRODS_ADMIN_PASSWORD=rods
 ARG IRODS_ZONE_PORT=1247
 ARG IRODS_ADMIN_USER=rods
 ARG IRODS_MAX_NUM_RE_PROCS=4
-ARG RABBITMQ_URL=
+ARG RABBITMQ_PORT=5672
+ARG RABBITMQ_IRODS_USER=irods
+ARG RABBITMQ_IRODS_PASSWORD=
 ARG RABBITMQ_IRODS_EXCHANGE=irods
+ARG RABBITMQ_URL=
+ARG RABBITMQ_HOST=rabbitmq
 ARG IRODS_BISQUE_ADMIN_USER=bisque_admin
 ARG BISQUE_URL=
 ARG BISQUE_ADMIN_USER=bisque_admin

@@ -36,6 +36,11 @@
 # IRODS_ZONE_PORT             The main TCP port used by the zone for
 #                             communication.
 # IRODS_ADMIN_USER            The main rodsadmin user.
+# RABBITMQ_PORT               The TCP port for the RabbitMQ service
+# RABBITMQ_IRODS_USER         The irods user account for the RabbitMQ service
+# RABBITMQ_IRODS_PASSWORD     The irods user password for the RabbitMQ service
+# RABBITMQ_IRODS_EXCHANGE     The exchange for the RabbitMQ service
+# RABBITMQ_HOST               The FQDN or IP address of the RabbitMQ server
 
 
 set -o errexit -o nounset -o pipefail
@@ -52,6 +57,8 @@ readonly Version="$HomeDir"/VERSION.json
 
 readonly EnvDir="$HomeDir"/.irods
 readonly EnvCfg="$EnvDir"/irods_environment.json
+
+readonly RabbitMqConnStr="amqp://$RABBITMQ_IRODS_USER:$RABBITMQ_IRODS_PASSWORD@$RABBITMQ_HOST:$RABBITMQ_PORT"
 
 
 main()
@@ -200,7 +207,18 @@ mk_server_cfg()
       [ "ipc-custom" ] + .plugin_specific_configuration.re_rulebase_set  
   else 
     .
-  end )
+  end ) |
+.plugin_configuration.rule_engines |= [{
+  "instance_name": "irods_rule_engine_plugin-audit_amqp-instance",
+  "plugin_name": "irods_rule_engine_plugin-audit_amqp",
+  "plugin_specific_configuration": {
+    "amqp_location": "$RabbitMqConnStr",
+    "amqp_topic": "amq.topic",
+    "pep_regex_to_match": "audit_.*",
+    "amqp_options": ""
+  }
+}] + . |
+.rule_engine_namespaces[.rule_engine_namespaces| length] |= . + "audit_"
 JQ
 }
 
