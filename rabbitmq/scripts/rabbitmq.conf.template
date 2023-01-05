@@ -3,3 +3,7 @@ listeners.tcp.default = $RABBITMQ_PORT
 management.listener.port = $RABBITMQ_MANAGEMENT_PORT
 management.listener.ssl = false
 management.load_definitions = /etc/rabbitmq/definitions.json
+
+amqp1_0.default_user = $RABBITMQ_IRODS_USER
+amqp1_0.default_vhost = /
+amqp1_0.protocol_strict_mode = false

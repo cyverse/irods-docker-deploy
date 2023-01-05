@@ -213,7 +213,7 @@ mk_server_cfg()
   "plugin_name": "irods_rule_engine_plugin-audit_amqp",
   "plugin_specific_configuration": {
     "amqp_location": "$RabbitMqConnStr",
-    "amqp_topic": "amq.topic",
+    "amqp_topic": "/exchange/irods/audit",
     "pep_regex_to_match": "audit_.*",
     "amqp_options": ""
   }

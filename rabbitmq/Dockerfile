@@ -17,3 +17,6 @@ RUN prep-definitions-json.sh
 COPY rabbitmq/scripts/rabbitmq.conf.template /tmp/rabbitmq.conf.template
 COPY rabbitmq/scripts/prep-rabbitmq-conf.sh /usr/local/bin/
 RUN prep-rabbitmq-conf.sh
+
+# enable rabbitmq_amqp1_0 to get iRODS Audit events
+RUN rabbitmq-plugins enable rabbitmq_amqp1_0

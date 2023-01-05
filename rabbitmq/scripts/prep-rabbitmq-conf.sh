@@ -6,7 +6,7 @@
 #
 # RABBITMQ_PORT                       The TCP port for the RabbitMQ service
 # RABBITMQ_MANAGEMENT_PORT            The TCP port for the RabbitMQ web admin service
-
+# RABBITMQ_IRODS_USER                 The irods user account for the RabbitMQ service
 
 main()
 {
@@ -32,6 +32,7 @@ expand_tmpl()
   cat <<EOF | sed --file - /tmp/rabbitmq.conf.template
 s/\$RABBITMQ_PORT/$(escape $RABBITMQ_PORT)/g
 s/\$RABBITMQ_MANAGEMENT_PORT/$(escape $RABBITMQ_MANAGEMENT_PORT)/g
+s/\$RABBITMQ_IRODS_USER/$(escape $RABBITMQ_IRODS_USER)/g
 EOF
 }
 
