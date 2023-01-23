@@ -16,6 +16,7 @@
 # IRODS_ZONE_NAME           The name of the iRODS zone.
 # IRODS_ADMIN_USER          The main rodsadmin user.
 # IRODS_ADMIN_PASSWORD      The password used to authenticate the IRODS_ADMIN_USER user.
+# IRODS_BISQUE_ADMIN_USER   The iRODS username for BisQue
 
 
 main()
@@ -52,6 +53,7 @@ s/\$IRODS_ZONE_PORT/$(escape $IRODS_ZONE_PORT)/g
 s/\$IRODS_ZONE_NAME/$(escape $IRODS_ZONE_NAME)/g
 s/\$IRODS_ADMIN_USER/$(escape $IRODS_ADMIN_USER)/g
 s/\$IRODS_ADMIN_PASSWORD/$(escape $IRODS_ADMIN_PASSWORD)/g
+s/\$IRODS_BISQUE_ADMIN_USER/$(escape $IRODS_BISQUE_ADMIN_USER)/g
 EOF
 }
 
