@@ -64,13 +64,6 @@ start()
     exec 3<&-
     exec 3>&-
 
-    # Start irods-rule-async-exec-cmd-svc
-    if ! su --command 'irods-rule-async-exec-cmd-svc' --login "$IRODS_SYSTEM_USER"
-    then
-      cat /var/lib/irods_rule_async_exec_cmd/irods_rule_async_exec_cmd.log.* >&2
-      return 1
-    fi
-
     # Start irods
     if ! su --command '/var/lib/irods/irodsctl start' --login "$IRODS_SYSTEM_USER"
     then
@@ -84,6 +77,13 @@ start()
 
     printf 'Authenticating clerver user\n'
     su --command "iinit '$IRODS_ADMIN_PASSWORD'" --login "$IRODS_SYSTEM_USER"
+
+    # Start irods-rule-async-exec-cmd-svc in the last
+    if ! su --command 'irods-rule-async-exec-cmd-svc' --login "$IRODS_SYSTEM_USER"
+    then
+      cat /var/lib/irods_rule_async_exec_cmd/irods_rule_async_exec_cmd.log.* >&2
+      return 1
+    fi
   fi
 }
 
