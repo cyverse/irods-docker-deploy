@@ -1,0 +1,84 @@
+#! /bin/bash
+#
+# Usage:
+#  service (start|stop)
+#
+# This script starts or stops a catalog service provider inside the container if 
+# there is one.
+#
+# It requires the following environment variable to be defined.
+#
+# IRODS_SYSTEM_USER  the system user who executes iRODS
+#
+# If there is a provider inside the container when it starts, the following
+# additional environment variables need to be defined.
+#
+# IRODS_SYSTEM_GROUP   The default group of the service account
+# IRODS_SYSTEM_USER    The system user for the iRODS process
+# IRODS_ADMIN_PASSWORD  The password used to authenticate the clerver user
+# IRODS_DEFAULT_RESOURCE      The name of the default resource to use
+
+
+main()
+{
+  if [ "$#" -lt 1 ]
+  then
+    printf 'Requires either "start" or "stop" as its first parameter\n' >&2
+    return 1
+  fi
+
+  local action="$1"
+
+  case "$action" in
+    start)
+      start
+      ;;
+    stop)
+      stop
+      ;;
+    *)
+      printf 'Unknown command "%s"\n' "$action" >&2
+      return 1
+      ;;
+  esac
+}
+
+
+start()
+{
+  # Ensure that the correct user owns everything in /var/lib/irods and /etc/irods
+  # If this isn't done, some of the ansible ownership tests will fail.
+  if [ -e /var/lib/irods/.irods/irods_environment.json ]
+  then
+    chown --recursive "$IRODS_SYSTEM_USER":"$IRODS_SYSTEM_GROUP" /etc/irods /var/lib/irods
+
+    # Start irods
+    if ! su --command '/var/lib/irods/irodsctl start' --login "$IRODS_SYSTEM_USER"
+    then
+      cat /var/lib/irods/log/rodsLog* >&2
+      return 1
+    fi
+
+    sed -i "s/demoResc/$IRODS_DEFAULT_RESOURCE/g" /etc/irods/core.re
+
+    touch /var/lock/subsys/irods
+
+    printf 'Authenticating clerver user\n'
+    su --command "iinit '$IRODS_ADMIN_PASSWORD'" --login "$IRODS_SYSTEM_USER"
+  fi
+}
+
+
+stop()
+{
+  if su --command imiscsvrinfo --login "$IRODS_SYSTEM_USER" >& /dev/null
+  then
+    su --command '/var/lib/irods/irodsctl stop' --login "$IRODS_SYSTEM_USER"
+    rm /var/lock/subsys/irods
+  fi
+}
+
+
+set -e
+
+main "$@"

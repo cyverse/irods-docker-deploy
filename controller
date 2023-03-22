@@ -1,7 +1,7 @@
 #! /bin/bash
 #
 # Usage:
-#  controller (start|stop|dbbackup)
+#  controller (create_volumes|backup_db|start|stop)
 #
 # Starts or stops all of the containers.
 cfg=config.inc

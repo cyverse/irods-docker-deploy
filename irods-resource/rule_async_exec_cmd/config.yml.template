@@ -1,0 +1,22 @@
+amqp_config:
+  url: $RABBITMQ_URL
+  exchange: $RABBITMQ_IRODS_EXCHANGE
+
+bisque_config:
+  url: $BISQUE_URL
+  admin_username: $BISQUE_ADMIN_USER
+  admin_password: $BISQUE_ADMIN_PASSWORD
+  irods_username: $IRODS_BISQUE_ADMIN_USER
+  irods_zone: $IRODS_ZONE_NAME
+  irods_base_url: $BISQUE_IRODS_BASE_URL
+  irods_root_path: $BISQUE_IRODS_ROOT_PATH
+
+irods_config:
+  host: $IRODS_HOST
+  port: $IRODS_ZONE_PORT
+  zone: $IRODS_ZONE_NAME
+  admin_username: $IRODS_ADMIN_USER
+  admin_password: $IRODS_ADMIN_PASSWORD
+
+data_root_path: /var/lib/irods_rule_async_exec_cmd
+debug: true

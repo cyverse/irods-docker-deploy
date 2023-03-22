@@ -1,0 +1,7 @@
+# This rulebase contains the environment-specific constants for bisque.
+#
+# © 2021 The Arizona Board of Regents on behalf of The University of Arizona. 
+# For license information, see https://cyverse.org/license.
+
+bisque_IRODS_ADMIN_USER: string
+bisque_IRODS_ADMIN_USER = '$IRODS_BISQUE_ADMIN_USER'

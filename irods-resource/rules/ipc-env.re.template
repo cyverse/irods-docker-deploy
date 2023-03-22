@@ -1,0 +1,12 @@
+# This rulebase contains the environment-specific constants.
+#
+# © 2021 The Arizona Board of Regents on behalf of The University of Arizona. 
+# For license information, see https://cyverse.org/license.
+
+# the maximum number of concurrent rule engine workers
+ipc_MAX_NUM_RE_PROCS: integer
+ipc_MAX_NUM_RE_PROCS = $IRODS_MAX_NUM_RE_PROCS
+
+# the local iRODS zone
+ipc_ZONE: string
+ipc_ZONE = '$IRODS_ZONE_NAME'
