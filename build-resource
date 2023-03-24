@@ -1,10 +1,10 @@
 #! /bin/bash
 #
 # Usage:
-#  build
+#  build-resource
 #
 # Builds docker images with the provided configuration values via config.inc.
-cfg=config.inc
+cfg=config-resource.inc
 
 set -o errexit -o nounset -o pipefail
 
@@ -34,9 +34,9 @@ main()
     "$baseDir"
 
   if ! command -v docker-compose > /dev/null; then
-    docker compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" build
+    docker compose --file "$baseDir"/docker-compose-resource.yml --project-name "$ENV_NAME" build
   else
-    docker-compose --file "$baseDir"/docker-compose.yml --project-name "$ENV_NAME" build
+    docker-compose --file "$baseDir"/docker-compose-resource.yml --project-name "$ENV_NAME" build
   fi
 }
 
