@@ -49,34 +49,34 @@ ARG BISQUE_IRODS_BASE_URL=
 ARG BISQUE_IRODS_ROOT_PATH=/
 
 ### Configure iRODS
-COPY irods/scripts/config-irods.sh /tmp/config-irods
+COPY irods-resource/scripts/config-irods.sh /tmp/config-irods
 RUN /tmp/config-irods
 
 ### Create service script
-COPY irods/scripts/service.sh.template /tmp/
-COPY irods/scripts/prep-svc-script.sh /tmp/prep-svc-script
+COPY irods-resource/scripts/service.sh.template /tmp/
+COPY irods-resource/scripts/prep-svc-script.sh /tmp/prep-svc-script
 RUN /tmp/prep-svc-script
 
 ### Install iRODS Rules
-COPY irods/rules/ipc-custom.re /etc/irods/
-COPY irods/rules/ipc-services.re /etc/irods/
-COPY irods/rules/ipc-logic.re /etc/irods/
-COPY irods/rules/ipc-uuid.re /etc/irods/
-COPY irods/rules/ipc-json.re /etc/irods/
-COPY irods/rules/ipc-env.re.template /tmp/
-COPY irods/rules/bisque.re /etc/irods/
-COPY irods/rules/bisque-env.re.template /tmp/
-COPY irods/scripts/prep-re-script.sh /tmp/prep-re-script
+COPY irods-resource/rules/ipc-custom.re /etc/irods/
+COPY irods-resource/rules/ipc-services.re /etc/irods/
+COPY irods-resource/rules/ipc-logic.re /etc/irods/
+COPY irods-resource/rules/ipc-uuid.re /etc/irods/
+COPY irods-resource/rules/ipc-json.re /etc/irods/
+COPY irods-resource/rules/ipc-env.re.template /tmp/
+COPY irods-resource/rules/bisque.re /etc/irods/
+COPY irods-resource/rules/bisque-env.re.template /tmp/
+COPY irods-resource/scripts/prep-re-script.sh /tmp/prep-re-script
 RUN /tmp/prep-re-script
 
 ### Install scripts used by iRODS Rules
-COPY irods/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
-COPY irods/rule_scripts/setuuid.sh /var/lib/irods/msiExecCmd_bin/
+COPY irods-resource/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
+COPY irods-resource/rule_scripts/setuuid.sh /var/lib/irods/msiExecCmd_bin/
 RUN cp /usr/local/bin/irods-rule-async-exec-cmd /var/lib/irods/msiExecCmd_bin/
 
 ### Install scripts used by irods-rule-async-exec-cmd
-COPY irods/rule_async_exec_cmd/config.yml.template /tmp/rule_async_exec_cmd_config.yml.template
-COPY irods/scripts/prep-rule-async-exec-cmd-config.sh /tmp/prep-rule-async-exec-cmd-config
+COPY irods-resource/rule_async_exec_cmd/config.yml.template /tmp/rule_async_exec_cmd_config.yml.template
+COPY irods-resource/scripts/prep-rule-async-exec-cmd-config.sh /tmp/prep-rule-async-exec-cmd-config
 RUN /tmp/prep-rule-async-exec-cmd-config
 
 CMD [ "/service.sh" ]
