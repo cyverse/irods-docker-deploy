@@ -52,6 +52,9 @@ start()
   then
     chown --recursive "$IRODS_SYSTEM_USER":"$IRODS_SYSTEM_GROUP" /etc/irods /var/lib/irods
 
+    printf 'Authenticating clerver user\n'
+    su --command "iinit '$IRODS_ADMIN_PASSWORD'" --login "$IRODS_SYSTEM_USER"
+
     # Start irods
     if ! su --command '/var/lib/irods/irodsctl start' --login "$IRODS_SYSTEM_USER"
     then
@@ -62,9 +65,6 @@ start()
     sed -i "s/demoResc/$IRODS_DEFAULT_RESOURCE/g" /etc/irods/core.re
 
     touch /var/lock/subsys/irods
-
-    printf 'Authenticating clerver user\n'
-    su --command "iinit '$IRODS_ADMIN_PASSWORD'" --login "$IRODS_SYSTEM_USER"
   fi
 }
 
