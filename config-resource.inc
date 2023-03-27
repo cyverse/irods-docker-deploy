@@ -11,3 +11,5 @@ export IRODS_RESOURCE_HOST=synology.ece.ucsb.edu
 export RABBITMQ_URL=amqp://$RABBITMQ_IRODS_USER:$RABBITMQ_IRODS_PASSWORD@$IRODS_HOST:$RABBITMQ_PORT/
 export IRODS_DEFAULT_RESOURCE=netResc
 
+export DOCKER_IRODS_RESOURCE_VOLUME=irods_resource_volume
+export LOCAL_IRODS_RESOURCE_VOLUME_PATH=/opt/irods-docker-deploy/irods_resource_volume

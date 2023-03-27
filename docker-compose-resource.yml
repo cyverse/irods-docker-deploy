@@ -30,9 +30,9 @@ services:
       - "1247:1247"
       - "$IRODS_FIRST_EPHEMERAL_PORT-$IRODS_LAST_EPHEMERAL_PORT:$IRODS_FIRST_EPHEMERAL_PORT-$IRODS_LAST_EPHEMERAL_PORT"
     volumes:
-      - "irods_volume:$IRODS_VAULT"
+      - "irods_resource_volume:$IRODS_VAULT"
   
 volumes:
-  irods_volume:
+  irods_resource_volume:
     external: true
   
