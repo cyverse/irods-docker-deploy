@@ -57,3 +57,6 @@ insert into R_OBJT_ACCESS values (9027,9010,1200,'1170000000','1170000000');
 insert into R_OBJT_ACCESS values (9028,9010,1200,'1170000000','1170000000');
 insert into R_OBJT_ACCESS values (9029,9011,1200,'1170000000','1170000000');
 insert into R_OBJT_ACCESS values (9030,9011,1200,'1170000000','1170000000');
+
+/* bundle resource */
+insert into R_RESC_MAIN (resc_id, resc_name, zone_name, resc_type_name, resc_class_name,  resc_net, resc_def_path, free_space, free_space_ts, resc_info, r_comment, resc_status, create_ts, modify_ts) values (9100, 'bundleResc', 'ZONE_NAME_TEMPLATE', 'unixfilesystem', 'bundle', 'localhost', '/bundle', '', '', '', '', '', '1170000000','1170000000');
