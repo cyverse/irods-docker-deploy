@@ -62,7 +62,8 @@ export IRODS_PORT="$IRODS_ZONE_PORT"
 export IRODS_ZONE="$IRODS_ZONE_NAME"
 export IRODS_SHARED=/"$IRODS_ZONE_NAME"/home/public
 
-export BISQUE_URL=https://bisque.cyverse.org
+# leave BISQUE_URL empty to disable bisque integration
+export BISQUE_URL=
 export BISQUE_IRODS_BASE_URL=file:///irods_mount
 export BISQUE_IRODS_ROOT_PATH=/"$IRODS_ZONE_NAME"/home
 export BISQUE_ADMIN_USER=bisque_admin
