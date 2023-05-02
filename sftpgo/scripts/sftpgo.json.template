@@ -385,7 +385,8 @@
           "IRODS_HOST=$IRODS_HOST",
           "IRODS_PORT=$IRODS_PORT",
           "IRODS_ZONE=$IRODS_ZONE",
-          "IRODS_SHARED=$IRODS_SHARED"
+          "IRODS_SHARED=$IRODS_SHARED",
+          "SFTPGO_HOME_PATH=$SFTPGO_HOME_PATH"
         ],
         "args": [],
         "hook": ""
