@@ -1,11 +1,11 @@
-# This rulebase contains the rules attached to Policy Execution Points for the 
-# core CyVerse Data Store policies. All policy logic is in this file or 
+# This rulebase contains the rules attached to Policy Execution Points for the
+# core CyVerse Data Store policies. All policy logic is in this file or
 # included by this file.
 #
-# © 2021 The Arizona Board of Regents on behalf of The University of Arizona. 
+# © 2021 The Arizona Board of Regents on behalf of The University of Arizona.
 # For license information, see https://cyverse.org/license.
 
-# The environment-specific configuration constants belong in the file 
+# The environment-specific configuration constants belong in the file
 # ipc-env.re.
 
 @include 'ipc-env'
@@ -15,8 +15,10 @@
 # ipc-custom.re. The rule names should be prefixed with 'ipc' and suffixed with
 # the name of the rule hook that will call the custom rule.
 
-@include 'ipc-logic'
+# The shared logic usable by all CyVerse and third parties
 @include 'ipc-services'
+
+@include 'ipc-logic'
 
 # THIRD PARTY RULES
 #
@@ -60,7 +62,7 @@ exclusive_acPostProcForCollCreate {
 # POLICIES
 
 
-# This rule administratively creates a collection, e.g., creating a home 
+# This rule administratively creates a collection, e.g., creating a home
 # collection when a user is created. It ensures all collection creation policies
 # are applied to then newly created collection.
 #
@@ -180,9 +182,14 @@ acPostProcForCollCreate {
 }
 
 
+acPostProcForDataCopyReceived(*leaf_resource) { ipc_acPostProcForDataCopyReceived(*leaf_resource); }
+
+
 acPostProcForOpen {
-  *err = errormsg(ipc_acPostProcForOpen, *msg);
-  if (*err < 0) { writeLine('serverLog', *msg); }
+  if (!ipc_inStaging(/$objPath)) {
+    *err = errormsg(ipc_acPostProcForOpen, *msg);
+    if (*err < 0) { writeLine('serverLog', *msg); }
+  }
 }
 
 
@@ -202,7 +209,9 @@ acPostProcForObjRename(*SourceObject, *DestObject) {
 
 
 acPostProcForModifyAccessControl(*RecursiveFlag, *AccessLevel, *UserName, *Zone, *Path) {
-  ipc_acPostProcForModifyAccessControl(*RecursiveFlag, *AccessLevel, *UserName, *Zone, *Path);
+  if (!ipc_inStaging(/*Path)) {
+    ipc_acPostProcForModifyAccessControl(*RecursiveFlag, *AccessLevel, *UserName, *Zone, *Path);
+  }
 }
 
 
@@ -236,8 +245,16 @@ acPostProcForParallelTransferReceived(*LeafResource) {
 
 ## SUPPORTING FUNCTIONS AND RULES ##
 
+_ipc_getObjPath(*DATA_OBJ_INFO) =
+  let *path = *DATA_OBJ_INFO.logical_path in
+  let *_ = if (*path == '') {
+     *id = *DATA_OBJ_INFO.data_id;
+     foreach (*rec in SELECT COLL_NAME, DATA_NAME WHERE DATA_ID = *id) {
+       *path = *rec.COLL_NAME ++ '/' ++ *rec.DATA_NAME;
+      } } in
+  /*path
 
-# generates a unique session variable name for a data object 
+# generates a unique session variable name for a data object
 #
 # Parameters:
 #  *Path  the absolute path to the data object
@@ -249,7 +266,7 @@ _ipc_mkDataObjSessVar: path -> string
 _ipc_mkDataObjSessVar(*Path) = 'ipc-data-obj-' ++ str(*Path)
 
 
-# XXX - Because of https://github.com/irods/irods/issues/5540 
+# XXX - Because of https://github.com/irods/irods/issues/5540
 # _ipc_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO) {
 #   *path = *DATA_OBJ_INFO.logical_path;
 #
@@ -260,19 +277,22 @@ _ipc_mkDataObjSessVar(*Path) = 'ipc-data-obj-' ++ str(*Path)
 #     *err = errormsg(ipc_dataObjCreated_default(*User, *Zone, *DATA_OBJ_INFO), *msg);
 #     if (*err < 0) { writeLine('serverLog', *msg); }
 #
-#     *err = errormsg(bisque_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO), *msg);
-#     if (*err < 0) { writeLine('serverLog', *msg); }
 #   }
 # }
 _ipc_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO, *Step) {
   *path = *DATA_OBJ_INFO.logical_path;
 
-  *err = errormsg(ipc_dataObjCreated_default(*User, *Zone, *DATA_OBJ_INFO, *Step), *msg);
-  if (*err < 0) { writeLine('serverLog', *msg); }
+  if (ipc_inStaging(/*path)) {
+    *err = errormsg(ipc_dataObjCreated_staging(*User, *Zone, *DATA_OBJ_INFO, *Step), *msg);
+    if (*err < 0) { writeLine('serverLog', *msg); }
+  } else {
+    *err = errormsg(ipc_dataObjCreated_default(*User, *Zone, *DATA_OBJ_INFO, *Step), *msg);
+    if (*err < 0) { writeLine('serverLog', *msg); }
 
-  if (*Step != 'FINISH') {
+    if (*Step != 'FINISH') {
       *err = errormsg(bisque_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO), *msg);
       if (*err < 0) { writeLine('serverLog', *msg); }
+    }
   }
 }
 # XXX - ^^^
@@ -281,8 +301,10 @@ _ipc_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO, *Step) {
 _ipc_dataObjModified(*User, *Zone, *DATA_OBJ_INFO) {
   *path = *DATA_OBJ_INFO.logical_path;
 
-  *err = errormsg(ipc_dataObjModified_default(*User, *Zone, *DATA_OBJ_INFO), *msg);
-  if (*err < 0) { writeLine('serverLog', *msg); }
+  if (! ipc_inStaging(/*path)) {
+    *err = errormsg(ipc_dataObjModified_default(*User, *Zone, *DATA_OBJ_INFO), *msg);
+    if (*err < 0) { writeLine('serverLog', *msg); }
+  }
 }
 
 
@@ -297,11 +319,11 @@ _ipc_dataObjMetadataModified(*User, *Zone, *Object) {
 
 
 pep_database_close_post(*INSTANCE, *CONTEXT, *OUT) {
-# XXX - Because of https://github.com/irods/irods/issues/5540, 
+# XXX - Because of https://github.com/irods/irods/issues/5540,
 # nothing can be done here
 #   foreach (*key in temporaryStorage) {
 #     *vals = split(temporaryStorage.'*key', ' ');
-# # XXX - Because of https://github.com/irods/irods/issues/5538, the CONTEXT 
+# # XXX - Because of https://github.com/irods/irods/issues/5538, the CONTEXT
 # # variables need to passed through temporaryStorage
 # #     *user = *CONTEXT.user_user_name
 # #     *zone = *CONTEXT.user_rods_zone
@@ -324,14 +346,14 @@ pep_database_close_post(*INSTANCE, *CONTEXT, *OUT) {
 #       _ipc_dataObjCreated(*user, *zone, *doi);
 #     } else if (*op == 'MODIFY') {
 #       _ipc_dataObjModified(*user, *zone, *doi);
-#     } 
+#     }
 #   }
 }
 
 
 pep_database_close_finally(*INSTANCE, *CONTEXT, *OUT) {
 # XXX - Because of https://github.com/irods/irods/issues/5540,
-# cleanup can't happen 
+# cleanup can't happen
 #   foreach (*key in temporaryStorage) {
 #     temporaryStorage.'*key' = '';
 #   }
@@ -343,27 +365,23 @@ pep_database_close_finally(*INSTANCE, *CONTEXT, *OUT) {
 
 pep_database_mod_data_obj_meta_post(*INSTANCE, *CONTEXT, *OUT, *DATA_OBJ_INFO, *REG_PARAM) {
   *handled = false;
+  *logicalPath = _ipc_getObjPath(*DATA_OBJ_INFO);
 
-# XXX - Because of https://github.com/irods/irods/issues/5540, 
-# _ipc_dataObjCreated needs to be called here when not created through file 
+# XXX - Because of https://github.com/irods/irods/issues/5540,
+# _ipc_dataObjCreated needs to be called here when not created through file
 # registration
   if (! *handled && errorcode(*REG_PARAM.dataSize) == 0) {
-  # XXX - Because of https://github.com/irods/irods/issues/5870, 
-  # *DATA_OBJ_INFO.logical_path cannot directly be converted to a path.
-  #     *pathVar = _ipc_mkDataObjSessVar(/*DATA_OBJ_INFO.logical_path);
-    *logicalPath = *DATA_OBJ_INFO.logical_path;
-    *pathVar = _ipc_mkDataObjSessVar(/*logicalPath);
-  # XXX - ^^^
+    *pathVar = _ipc_mkDataObjSessVar(*logicalPath);
 
     if (
       (
-        if errorcode(temporaryStorage.'*pathVar') == 0 
-        then temporaryStorage.'*pathVar' like 'CREATE *' 
+        if errorcode(temporaryStorage.'*pathVar') == 0
+        then temporaryStorage.'*pathVar' like 'CREATE *'
         else false
       ) && (
         if errorcode(temporaryStorage.'XXX5540:*pathVar') == 0
         then temporaryStorage.'XXX5540:*pathVar' like 'START *'
-        else false 
+        else false
       )
     ) {
       *parts = split(temporaryStorage.'XXX5540:*pathVar', ' ');
@@ -378,48 +396,51 @@ pep_database_mod_data_obj_meta_post(*INSTANCE, *CONTEXT, *OUT, *DATA_OBJ_INFO, *
   }
 # XXX - ^^^
 
-  # If modification timestamp is being modified, the data object has been 
+  # If modification timestamp is being modified, the data object has been
   # modified, so publish a data-object.mod message.
   if (! *handled && errorcode(*REG_PARAM.dataModify) == 0) {
-# XXX - Because of https://github.com/irods/irods/issues/5870, 
-# *DATA_OBJ_INFO.logical_path cannot directly be converted to a path.
-#     *pathVar = _ipc_mkDataObjSessVar(/*DATA_OBJ_INFO.logical_path);
-    *logicalPath = *DATA_OBJ_INFO.logical_path;
-    *pathVar = _ipc_mkDataObjSessVar(/*logicalPath);
-# XXX - ^^^
+    *pathVar = _ipc_mkDataObjSessVar(*logicalPath);
 
     if (
       if errorcode(temporaryStorage.'*pathVar') != 0 then true
       else ! (temporaryStorage.'*pathVar' like 'CREATE *')
     ) {
-# XXX - Because of https://github.com/irods/irods/issues/5540, 
+      # If REG_PARAM.allReplStatus is TRUE, then this is a modification and not
+      # a replica update.
+      if (
+        if errorcode(*REG_PARAM.allReplStatus) != 0 then false
+        else *REG_PARAM.allReplStatus == 'TRUE'
+      ) {
+# XXX - Because of https://github.com/irods/irods/issues/5540,
 # _ipc_dataObjModified needs to be called here
-# # XXX - Because of https://github.com/irods/irods/issues/5538, the CONTEXT 
+# # XXX - Because of https://github.com/irods/irods/issues/5538, the CONTEXT
 # # variables need to passed through temporaryStorage
-# #       temporaryStorage.'*pathVar' = 'MODIFY *DATA_OBJ_INFO';
-#       temporaryStorage.'*pathVar' 
-#         = 'MODIFY ' 
-#         ++ *CONTEXT.user_user_name 
-#         ++ ' ' 
-#         ++ *CONTEXT.user_rods_zone 
-#         ++ ' *DATA_OBJ_INFO';
-# # XXX - ^^^        
-      _ipc_dataObjModified(*CONTEXT.user_user_name, *CONTEXT.user_rods_zone, *DATA_OBJ_INFO);
+# #         temporaryStorage.'*pathVar' = 'MODIFY *DATA_OBJ_INFO';
+#         temporaryStorage.'*pathVar'
+#           = 'MODIFY '
+#           ++ *CONTEXT.user_user_name
+#           ++ ' '
+#           ++ *CONTEXT.user_rods_zone
+#           ++ ' *DATA_OBJ_INFO';
+# # XXX - ^^^
+        _ipc_dataObjModified(*CONTEXT.user_user_name, *CONTEXT.user_rods_zone, *DATA_OBJ_INFO);
+# XXX - ^^^
+      }
+
       *handled = true;
     }
   }
 
 # XXX - Because of https://github.com/irods/irods/issues/5584, when an expiry
-# time, data type, or comment is set on a data object, sometimes *REG_PARAM is a 
-# string, and we can't tell which field was set. Due to 
-# https://github.com/irods/irods/issues/5583, we have can't risk calling 
+# time, data type, or comment is set on a data object, sometimes *REG_PARAM is a
+# string, and we can't tell which field was set. Due to
+# https://github.com/irods/irods/issues/5583, we have can't risk calling
 # msiExecCmd when a data object is being overwritten using parallel transfer.
 # Through experimentation, *REG_PARAM serializes to '0', for the calls to this
-# PEP that happen during a data object modification that don't set dataSize or 
+# PEP that happen during a data object modification that don't set dataSize or
 # dataModify.
   if (! *handled && '*REG_PARAM' != '0') {
-    _ipc_dataObjMetadataModified(
-      *CONTEXT.user_user_name, *CONTEXT.user_rods_zone, *DATA_OBJ_INFO.logical_path);
+    _ipc_dataObjMetadataModified(*CONTEXT.user_user_name, *CONTEXT.user_rods_zone, *logicalPath);
   }
 # XXX - ^^^
 }
@@ -433,31 +454,31 @@ pep_database_reg_data_obj_post(*INSTANCE, *CONTEXT, *OUT, *DATA_OBJ_INFO) {
   *DATA_OBJ_INFO.data_owner_name = *CONTEXT.user_user_name;
   *DATA_OBJ_INFO.data_owner_zone = *CONTEXT.user_rods_zone;
 # XXX - ^^^
-# XXX - Because of https://github.com/irods/irods/issues/5870, 
+# XXX - Because of https://github.com/irods/irods/issues/5870,
 # *DATA_OBJ_INFO.logical_path cannot directly be converted to a path.
 #   *pathVar = _ipc_mkDataObjSessVar(/*DATA_OBJ_INFO.logical_path);
   *logicalPath = *DATA_OBJ_INFO.logical_path;
   *pathVar = _ipc_mkDataObjSessVar(/*logicalPath);
 # XXX - ^^^
-# XXX - Because of https://github.com/irods/irods/issues/5538, the CONTEXT 
+# XXX - Because of https://github.com/irods/irods/issues/5538, the CONTEXT
 # variables need to passed through temporaryStorage
 #   temporaryStorage.'*pathVar' = 'CREATE *DATA_OBJ_INFO';
-  temporaryStorage.'*pathVar' 
+  temporaryStorage.'*pathVar'
     = 'CREATE ' ++ *CONTEXT.user_user_name ++ ' ' ++ *CONTEXT.user_rods_zone ++ ' *DATA_OBJ_INFO';
-# XXX - Because of https://github.com/irods/irods/issues/5540, 
-# _ipc_dataObjCreated needs to be called here for data objects created when 
-# registering a file already on a resource server.  
-  # NB: When a data object is created due to file registration, the size of the 
-  # file is known. Almost always the size will be greater than 0. This isn't 
+# XXX - Because of https://github.com/irods/irods/issues/5540,
+# _ipc_dataObjCreated needs to be called here for data objects created when
+# registering a file already on a resource server.
+  # NB: When a data object is created due to file registration, the size of the
+  # file is known. Almost always the size will be greater than 0. This isn't
   # good enough. We get lots of zero byte files.
-  *step = if *DATA_OBJ_INFO.data_size == '0' then 'START' else 'FULL'; 
+  *step = if *DATA_OBJ_INFO.data_size == '0' then 'START' else 'FULL';
   _ipc_dataObjCreated(*CONTEXT.user_user_name, *CONTEXT.user_rods_zone, *DATA_OBJ_INFO, *step);
 
-  temporaryStorage.'XXX5540:*pathVar' 
-    = *step 
-    ++ ' ' 
-    ++ *DATA_OBJ_INFO.data_owner_name 
-    ++ ' ' 
+  temporaryStorage.'XXX5540:*pathVar'
+    = *step
+    ++ ' '
+    ++ *DATA_OBJ_INFO.data_owner_name
+    ++ ' '
     ++ *DATA_OBJ_INFO.data_owner_zone;
 # XXX - ^^^
 }
@@ -471,4 +492,195 @@ pep_database_reg_data_obj_post(*INSTANCE, *CONTEXT, *OUT, *DATA_OBJ_INFO) {
 # This rule is meant for project specific implementations where an project
 # implementation is within an `on` block that restricts the resource resolution
 # to entities relevant to the project.
-pep_resource_resolve_hierarchy_pre(*INSTANCE, *CONTEXT, *OUT, *OPERATION, *HOST, *PARSER, *VOTE) {}
+pep_resource_resolve_hierarchy_pre(*INSTANCE, *CONTEXT, *OUT, *OPERATION, *HOST, *PARSER, *VOTE) {
+# XXX - Because of https://github.com/irods/irods/issues/6463, an error
+# happening in an `ON` condition needs to be captured and sent in the catch-all.
+  if (errorcode(temporaryStorage.resource_resolve_hierarchy_err) == 0) {
+    failmsg(-32000, temporaryStorage.resource_resolve_hierarchy_err);
+  }
+# XXX - ^^^
+}
+
+# generates a unique variable name for a data object or collection based on its absolute path,
+# the variable name is prefixed with "trash_timestamp_".
+#
+# Parameters:
+#  *Path:  the absolute path to the data object or collection
+#
+# Return:
+#  the variable name to be used in temporaryStorage to store a timestamp value
+#
+_ipc_mkTimestampVar: path -> string
+_ipc_mkTimestampVar(*Path) = 'trash_timestamp_' ++ str(*Path)
+
+# generates a unique variable name for a data object based on its absolute path,
+# the variable name is prefixed with "data_id_".
+#
+# Parameters:
+#  *Path:  the absolute path to the data object
+#
+# Return:
+#  the variable name to be used in temporaryStorage to store a DATA_ID
+#
+_ipc_mkObjDataIdVar: path -> string
+_ipc_mkObjDataIdVar(*Path) = 'data_id_' ++ str(*Path)
+
+imeta_exec_ipc_trash_timestamp(*action, *type, *path, *avuValue) {
+  *actionArg = execCmdArg(*action);
+  *typeArg = execCmdArg(*type);
+  *pathArg = execCmdArg(*path);
+  *avuValueArg = execCmdArg(*avuValue);
+  *avuName = execCmdArg("ipc::trash_timestamp");
+  *argv = "*actionArg *typeArg *pathArg *avuName *avuValueArg";
+  *err = errormsg(msiExecCmd('imeta-exec', *argv, "", "", "", *out), *msg);
+  if (*err < 0) {
+    msiGetStderrInExecCmdOut(*out, *resp);
+    writeLine('serverLog', 'imeta-exec stderr: *resp');
+    writeLine('serverLog', 'imeta_exec_ipc_trash_timestamp: *msg');
+    *err;
+  }
+}
+
+pep_api_data_obj_unlink_pre(*INSTANCE, *COMM, *DATAOBJUNLINKINP) {
+  if (errorcode(*DATAOBJUNLINKINP.forceFlag) != 0) {
+    msiGetSystemTime(*timestamp, "");
+    *dataObjPath = *DATAOBJUNLINKINP.obj_path;
+    *timestampVar = _ipc_mkTimestampVar(/*dataObjPath);
+    temporaryStorage.'*timestampVar' = *timestamp;
+    imeta_exec_ipc_trash_timestamp("set", ipc_DATA_OBJECT, *dataObjPath, *timestamp);
+
+    msiSplitPath(*dataObjPath, *coll, *file);
+    foreach(*row in SELECT DATA_ID WHERE COLL_NAME = '*coll' AND DATA_NAME = '*file') {
+      *dataIdVar = _ipc_mkObjDataIdVar(/*dataObjPath);
+      temporaryStorage.'*dataIdVar' = *row.DATA_ID;
+    }
+  }
+}
+
+pep_api_data_obj_unlink_post(*INSTANCE, *COMM, *DATAOBJUNLINKINP) {
+  *dataObjPath = *DATAOBJUNLINKINP.obj_path;
+  *timestampVar = _ipc_mkTimestampVar(/*dataObjPath);
+  if (errorcode(temporaryStorage.'*timestampVar') == 0) {
+    temporaryStorage.'*timestampVar' = "";
+  }
+  *dataIdVar = _ipc_mkObjDataIdVar(/*dataObjPath);
+  if (errorcode(temporaryStorage.'*dataIdVar') == 0) {
+    *dataIdVarTemp = temporaryStorage.'*dataIdVar';
+    foreach(*Row in SELECT COLL_NAME
+                      WHERE DATA_ID = '*dataIdVarTemp') {
+                        *collNameList = split(*Row.COLL_NAME, '/');
+                        if (size(*collNameList) >= 5) {
+                          *parentCollPath = "";
+                          for (*i = 0; *i < 5; *i = *i + 1) {
+                            *parentCollPath = *parentCollPath ++ "/" ++ elem(*collNameList, *i);
+                          }
+                          msiGetSystemTime(*timestamp, "");
+                          imeta_exec_ipc_trash_timestamp("set", ipc_COLLECTION, *parentCollPath, *timestamp);
+                        }
+    }
+  }
+}
+
+pep_api_data_obj_unlink_except(*INSTANCE, *COMM, *DATAOBJUNLINKINP) {
+  *dataObjPath = *DATAOBJUNLINKINP.obj_path;
+  *timestampVar = _ipc_mkTimestampVar(/*dataObjPath);
+  if (errorcode(temporaryStorage.'*timestampVar') == 0) {
+    if (temporaryStorage.'*timestampVar' != "") {
+      imeta_exec_ipc_trash_timestamp("rm", ipc_DATA_OBJECT, *dataObjPath, temporaryStorage.'*timestampVar');
+    }
+  }
+}
+
+pep_api_data_obj_put_post(*INSTANCE, *COMM, *DATAOBJINP, *DATAOBJINPBBUF, *PORTALOPROUT) {
+  *zone = ipc_ZONE;
+  if (*DATAOBJINP.obj_path like '/*zone/trash/*') {
+    msiGetSystemTime(*timestamp, "");
+    imeta_exec_ipc_trash_timestamp("set", ipc_DATA_OBJECT, *DATAOBJINP.obj_path, *timestamp);
+  }
+}
+
+pep_api_rm_coll_pre(*INSTANCE, *COMM, *RMCOLLINP, *COLLOPRSTAT) {
+  if (errorcode(*RMCOLLINP.forceFlag) != 0) {
+    msiGetSystemTime(*timestamp, "");
+    *collNamePath = *RMCOLLINP.coll_name;
+    *timestampVar = _ipc_mkTimestampVar(/*collNamePath);
+    temporaryStorage.'*timestampVar' = *timestamp;
+    imeta_exec_ipc_trash_timestamp("set", ipc_COLLECTION, *collNamePath, *timestamp);
+  }
+}
+
+pep_api_rm_coll_except(*INSTANCE, *COMM, *RMCOLLINP, *COLLOPRSTAT) {
+  *collNamePath = *RMCOLLINP.coll_name;
+  *timestampVar = _ipc_mkTimestampVar(/*collNamePath);
+  if (errorcode(temporaryStorage.'*timestampVar') == 0) {
+    imeta_exec_ipc_trash_timestamp("rm", ipc_COLLECTION, *collNamePath, temporaryStorage.'*timestampVar');
+  }
+}
+
+pep_api_coll_create_post(*INSTANCE, *COMM, *COLLCREATEINP) {
+  *zone = ipc_ZONE;
+  *collNamePath = *COLLCREATEINP.coll_name;
+  if (*collNamePath like '/*zone/trash/*') {
+    msiGetSystemTime(*timestamp, "");
+    imeta_exec_ipc_trash_timestamp("set", ipc_COLLECTION, *collNamePath, *timestamp);
+  }
+}
+
+pep_api_data_obj_rename_pre(*INSTANCE, *COMM, *DATAOBJRENAMEINP) {
+  *zone = ipc_ZONE;
+  if ((*DATAOBJRENAMEINP.src_obj_path like '/*zone/trash/*') && (*DATAOBJRENAMEINP.dst_obj_path not like '/*zone/trash/*')) {
+    *srcObjPath = *DATAOBJRENAMEINP.src_obj_path;
+    *timestampVar = _ipc_mkTimestampVar(/*srcObjPath);
+    msiGetObjType(*srcObjPath, *Type);
+    if (ipc_isCollection(*Type)) {
+      foreach(*Row in SELECT META_COLL_ATTR_VALUE
+                        WHERE COLL_NAME like '*srcObjPath'
+                          AND META_COLL_ATTR_NAME = 'ipc::trash_timestamp') {
+                            temporaryStorage.'*timestampVar' = *Row.META_COLL_ATTR_VALUE;
+      }
+    }
+    else if (ipc_isDataObject(*Type)) {
+      msiSplitPath(*srcObjPath, *Coll, *File);
+      foreach(*Row in SELECT META_DATA_ATTR_VALUE
+                        WHERE COLL_NAME like '*Coll'
+                          AND DATA_NAME like '*File'
+                            AND META_DATA_ATTR_NAME = 'ipc::trash_timestamp') {
+                              temporaryStorage.'*timestampVar' = *Row.META_DATA_ATTR_VALUE;
+      }
+    }
+  }
+}
+
+pep_api_data_obj_rename_post(*INSTANCE, *COMM, *DATAOBJRENAMEINP) {
+  *zone = ipc_ZONE;
+  *destObjPath = *DATAOBJRENAMEINP.dst_obj_path;
+  if (*destObjPath like '/*zone/trash/*') {
+    msiGetSystemTime(*timestamp, "");
+    imeta_exec_ipc_trash_timestamp("set", ipc_getEntityType(*destObjPath), *destObjPath, *timestamp);
+  }
+  else if ((*DATAOBJRENAMEINP.src_obj_path like '/*zone/trash/*') && (*DATAOBJRENAMEINP.dst_obj_path not like '/*zone/trash/*')) {
+    *srcObjPath = *DATAOBJRENAMEINP.src_obj_path;
+    *timestampVar = _ipc_mkTimestampVar(/*srcObjPath);
+    if (errorcode(temporaryStorage.'*timestampVar') == 0) {
+      imeta_exec_ipc_trash_timestamp("rm", ipc_getEntityType(*destObjPath), *destObjPath, temporaryStorage.'*timestampVar');
+    }
+  }
+}
+
+pep_api_data_obj_copy_post(*INSTANCE, *COMM, *DATAOBJCOPYINP, *TRANSSTAT) {
+  *zone = ipc_ZONE;
+  *destObjPath = *DATAOBJCOPYINP.dst_obj_path;
+  if (*destObjPath like '/*zone/trash/*') {
+    msiGetSystemTime(*timestamp, "");
+    imeta_exec_ipc_trash_timestamp("set", ipc_DATA_OBJECT, *destObjPath, *timestamp);
+  }
+}
+
+pep_api_data_obj_create_post(*INSTANCE, *COMM, *DATAOBJINP) {
+  *zone = ipc_ZONE;
+  *objPath = *DATAOBJINP.obj_path;
+  if (*objPath like '/*zone/trash/*') {
+    msiGetSystemTime(*timestamp, "");
+    imeta_exec_ipc_trash_timestamp("set", ipc_DATA_OBJECT, *objPath, *timestamp);
+  }
+}

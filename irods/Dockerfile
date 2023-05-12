@@ -75,7 +75,6 @@ RUN /tmp/prep-svc-script
 COPY irods/rules/ipc-custom.re /etc/irods/
 COPY irods/rules/ipc-services.re /etc/irods/
 COPY irods/rules/ipc-logic.re /etc/irods/
-COPY irods/rules/ipc-uuid.re /etc/irods/
 COPY irods/rules/ipc-json.re /etc/irods/
 COPY irods/rules/ipc-env.re.template /tmp/
 COPY irods/rules/bisque.re /etc/irods/

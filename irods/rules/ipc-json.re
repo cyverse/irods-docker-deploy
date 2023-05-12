@@ -54,7 +54,7 @@ ipcJson_document(*SerialFields) = _ipcJson_encodeObject(*SerialFields)
 #   *Label - the name of the field
 #   *Val - the value of the field
 #
-ipcJson_number: string * double -> string
+ipcJson_number: forall V in {double string}, string * f V -> string
 ipcJson_number(*Label, *Val) = _ipcJson_mkField(*Label, '*Val')
 
 # construct a serialized JSON object field from its serialized fields
@@ -64,8 +64,8 @@ ipcJson_number(*Label, *Val) = _ipcJson_mkField(*Label, '*Val')
 #   *SerialFields - the list of pre-serialized fields ot include in the object
 #
 ipcJson_object: string * list string -> string
-ipcJson_object(*Label, *SerialFields) = _ipcJson_mkField(
-  *Label, _ipcJson_encodeObject(*SerialFields) )
+ipcJson_object(*Label, *SerialFields) = 
+	_ipcJson_mkField(*Label, _ipcJson_encodeObject(*SerialFields))
 
 # construct a serialized JSON string field
 #
