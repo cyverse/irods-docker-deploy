@@ -14,7 +14,7 @@ RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
       yum --assumeyes install \
       irods-server-4.2.8
 ### Install irods-rule-async-exec-cmd
-ARG IRODS_RULE_ASYNC_EXEC_CMD_VER=v0.2.13
+ARG IRODS_RULE_ASYNC_EXEC_CMD_VER=v0.2.14
 RUN mkdir -p /tmp/irods-rule-async-exec-cmd
 RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/${IRODS_RULE_ASYNC_EXEC_CMD_VER}/irods-rule-async-exec-cmd-svc-${IRODS_RULE_ASYNC_EXEC_CMD_VER}-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd-svc.tar.gz
 RUN curl -L https://github.com/cyverse/irods-rule-async-exec-cmd/releases/download/${IRODS_RULE_ASYNC_EXEC_CMD_VER}/irods-rule-async-exec-cmd-${IRODS_RULE_ASYNC_EXEC_CMD_VER}-linux-amd64.tar.gz --output /tmp/irods-rule-async-exec-cmd/irods-rule-async-exec-cmd.tar.gz
