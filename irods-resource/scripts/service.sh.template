@@ -67,8 +67,8 @@ start()
     sed -i "s/demoResc/$IRODS_DEFAULT_RESOURCE/g" /etc/irods/core.re
 
 
-    local IRODS_HOST_IP=$(dig +short $IRODS_HOST)
-    echo "\n$IRODS_HOST_IP  $IRODS_CONF_HOST\n" >> /etc/hosts
+    local IRODS_IP=$(dig +short $IRODS_HOST)
+    echo -e "\n$IRODS_IP  $IRODS_CONF_HOST\n" >> /etc/hosts
 
 
     touch /var/lock/subsys/irods

@@ -5,7 +5,8 @@ RUN yum --assumeyes install \
       jq python-pip python-requests python-virtualenv \
       ### Install software needed build image
       python3 \
-      curl
+      curl \
+      dig
 
 ### Install iRODS 
 ADD https://packages.irods.org/renci-irods.yum.repo /etc/yum.repos.d/renci-irods.yum.repo
@@ -13,6 +14,7 @@ ADD https://packages.irods.org/renci-irods.yum.repo /etc/yum.repos.d/renci-irods
 RUN rpm --import https://packages.irods.org/irods-signing-key.asc && \
       yum --assumeyes install \
       irods-server-4.2.8
+
 ### Install irods-rule-async-exec-cmd
 ARG IRODS_RULE_ASYNC_EXEC_CMD_VER=v0.2.14
 RUN mkdir -p /tmp/irods-rule-async-exec-cmd
