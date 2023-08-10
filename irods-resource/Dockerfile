@@ -27,6 +27,7 @@ ARG IRODS_CONTROL_PLANE_PORT=1248
 ARG IRODS_DEFAULT_RESOURCE=demoResc
 ARG IRODS_FIRST_EPHEMERAL_PORT=20000
 ARG IRODS_LAST_EPHEMERAL_PORT=20199
+ARG IRODS_CONF_HOST=ies
 ARG IRODS_HOST=ies
 ARG IRODS_RESOURCE_HOST=iresc
 ARG IRODS_NEGOTIATION_KEY=TEMPORARY_32byte_negotiation_key
@@ -68,6 +69,10 @@ COPY irods-resource/rules/bisque.re /etc/irods/
 COPY irods-resource/rules/bisque-env.re.template /tmp/
 COPY irods-resource/scripts/prep-re-script.sh /tmp/prep-re-script
 RUN /tmp/prep-re-script
+
+### Setup hosts (domain name resolving)
+COPY irods-resource/scripts/prep-hosts.sh /tmp/prep-hosts.sh
+RUN /tmp/prep-hosts.sh
 
 ### Install scripts used by iRODS Rules
 COPY irods-resource/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
