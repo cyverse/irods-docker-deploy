@@ -4,6 +4,8 @@
 #
 # It requires the following environment variables to be defined
 #
+# IRODS_CONF_HOST          The hostname of iRODS server that runs iCAT in the docker network.
+# IRODS_HOST               The hostname of iRODS server that runs iCAT.
 # IRODS_SYSTEM_GROUP          The system group for the iRODS process
 # IRODS_SYSTEM_USER           The system user for the iRODS process
 # IRODS_ADMIN_PASSWORD        The password used to authenticate the clever user.
@@ -32,6 +34,8 @@ escape()
 expand_tmpl()
 {
   cat <<EOF | sed --file - /tmp/service.sh.template
+s/\$IRODS_CONF_HOST/$(escape $IRODS_CONF_HOST)/g
+s/\$IRODS_HOST/$(escape $IRODS_HOST)/g
 s/\$IRODS_SYSTEM_GROUP/$(escape $IRODS_SYSTEM_GROUP)/g
 s/\$IRODS_SYSTEM_USER/$(escape $IRODS_SYSTEM_USER)/g
 s/\$IRODS_ADMIN_PASSWORD/$(escape $IRODS_ADMIN_PASSWORD)/g

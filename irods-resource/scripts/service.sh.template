@@ -13,6 +13,8 @@
 # If there is a provider inside the container when it starts, the following
 # additional environment variables need to be defined.
 #
+# IRODS_CONF_HOST          The hostname of iRODS server that runs iCAT in the docker network.
+# IRODS_HOST               The hostname of iRODS server that runs iCAT.
 # IRODS_SYSTEM_GROUP   The default group of the service account
 # IRODS_SYSTEM_USER    The system user for the iRODS process
 # IRODS_ADMIN_PASSWORD  The password used to authenticate the clerver user
@@ -63,6 +65,11 @@ start()
     fi
 
     sed -i "s/demoResc/$IRODS_DEFAULT_RESOURCE/g" /etc/irods/core.re
+
+
+    local IRODS_HOST_IP=$(dig +short $IRODS_HOST)
+    echo "\n$IRODS_HOST_IP  $IRODS_CONF_HOST\n" >> /etc/hosts
+
 
     touch /var/lock/subsys/irods
   fi

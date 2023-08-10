@@ -70,10 +70,6 @@ COPY irods-resource/rules/bisque-env.re.template /tmp/
 COPY irods-resource/scripts/prep-re-script.sh /tmp/prep-re-script
 RUN /tmp/prep-re-script
 
-### Setup hosts (domain name resolving)
-COPY irods-resource/scripts/prep-hosts.sh /tmp/prep-hosts.sh
-RUN /tmp/prep-hosts.sh
-
 ### Install scripts used by iRODS Rules
 COPY irods-resource/rule_scripts/generateuuid.sh /var/lib/irods/msiExecCmd_bin/
 COPY irods-resource/rule_scripts/setuuid.sh /var/lib/irods/msiExecCmd_bin/
