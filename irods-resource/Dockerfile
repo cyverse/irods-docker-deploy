@@ -6,7 +6,7 @@ RUN yum --assumeyes install \
       ### Install software needed build image
       python3 \
       curl \
-      dig
+      bind-utils
 
 ### Install iRODS 
 ADD https://packages.irods.org/renci-irods.yum.repo /etc/yum.repos.d/renci-irods.yum.repo
