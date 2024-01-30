@@ -32,6 +32,12 @@ export IRODS_ADMIN_USER=rods
 export IRODS_ADMIN_PASSWORD=test_rods_password
 export IRODS_BISQUE_ADMIN_USER=bisque_admin
 export IRODS_BISQUE_ADMIN_PASSWORD=test_bisque_admin_password
+export IRODS_AUTH_SCHEME=native
+export IRODS_SSL_CA_CERT_PATH=
+export IRODS_SSL_ALGORITH=
+export IRODS_SSL_KEY_SIZE=
+export IRODS_SSL_SALT_SIZE=
+export IRODS_SSL_HASH_ROUNDS=
 
 export DBMS_CONF_HOST="$ENV_NAME"_dbms_1."$DOMAIN"
 export IRODS_CONF_HOST="$ENV_NAME"_irods_1."$DOMAIN"

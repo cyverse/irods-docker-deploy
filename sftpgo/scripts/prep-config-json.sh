@@ -14,7 +14,13 @@
 # IRODS_HOST                      The iRODS hostname
 # IRODS_PORT                      The iRODS port number
 # IRODS_ZONE                      The iRODS zone name
-# IRODS_SHARED                    The iRODS shared directory name (e.g., public / shared)
+# IRODS_AUTH_SCHEME               The iRODS authentication scheme 'native', 'pam', or 'pam_for_users'
+# IRODS_SSL_CA_CERT_PATH          The iRODS CA certificate path for SSL
+# IRODS_SSL_ALGORITHM             The iRODS SSL encryption algorithm
+# IRODS_SSL_KEY_SIZE              The iRODS SSL encryption sey size
+# IRODS_SSL_SALT_SIZE             The iRODS SSL encryption salt size
+# IRODS_SSL_HASH_ROUNDS           The iRODS SSL encryption hash rounds
+# IRODS_SHARED                    The iRODS shared directory path (e.g., /iplant/home/public or /iplant/home/shared)
 
 
 main()
@@ -49,6 +55,12 @@ s/\$IRODS_PROXY_PASSWORD/$(escape $IRODS_PROXY_PASSWORD)/g
 s/\$IRODS_HOST/$(escape $IRODS_HOST)/g
 s/\$IRODS_PORT/$(escape $IRODS_PORT)/g
 s/\$IRODS_ZONE/$(escape $IRODS_ZONE)/g
+s/\$IRODS_AUTH_SCHEME/$(escape $IRODS_AUTH_SCHEME)/g
+s/\$IRODS_SSL_CA_CERT_PATH/$(escape $IRODS_SSL_CA_CERT_PATH)/g
+s/\$IRODS_SSL_ALGORITHM/$(escape $IRODS_SSL_ALGORITHM)/g
+s/\$IRODS_SSL_KEY_SIZE/$(escape $IRODS_SSL_KEY_SIZE)/g
+s/\$IRODS_SSL_SALT_SIZE/$(escape $IRODS_SSL_SALT_SIZE)/g
+s/\$IRODS_SSL_HASH_ROUNDS/$(escape $IRODS_SSL_HASH_ROUNDS)/g
 s/\$IRODS_SHARED/$(escape $IRODS_SHARED)/g
 EOF
 }
