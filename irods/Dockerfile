@@ -5,11 +5,11 @@ RUN yum --assumeyes install \
       jq python-pip python-requests python-virtualenv \
       ### Install software needed build image
       python3 \
-      curl \
+      curl
+RUN yum --disablerepo=* --assumeyes install \
       ### Install PostgreSQL ODBC connector
-      https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
-      rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG && \
-      yum --assumeyes install postgresql12-odbc
+      https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+RUN yum --assumeyes install postgresql12-odbc
 
 ### Install iRODS 
 ADD https://packages.irods.org/renci-irods.yum.repo /etc/yum.repos.d/renci-irods.yum.repo
