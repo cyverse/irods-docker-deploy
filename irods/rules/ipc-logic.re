@@ -405,7 +405,12 @@ removePrefix(*orig, *prefixes) {
 _ipc_chksumRepl(*Object, *ReplNum) {
   msiAddKeyValToMspStr('forceChksum', '', *opts);
   msiAddKeyValToMspStr('replNum', str(*ReplNum), *opts);
-  msiDataObjChksum(*Object, *opts, *_);
+  
+  delay(
+    '<INST_NAME>irods_rule_engine_plugin-irods_rule_language-instance</INST_NAME>' ++
+    '<PLUSET>0s</PLUSET>' ++
+    '<EF>0s REPEAT 0 TIMES</EF>'
+  ) {msiDataObjChksum(*Object, *opts, *_)}
 }
 
 
