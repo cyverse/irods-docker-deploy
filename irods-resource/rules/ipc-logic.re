@@ -400,12 +400,52 @@ removePrefix(*orig, *prefixes) {
   *result;
 }
 
+#
+# ICAT IDS
+#
+
+_ipc_getCollectionId(*Path) =
+	let *id = -1 in
+	let *path = str(*Path) in
+	let *_ = foreach (*rec in SELECT COLL_ID WHERE COLL_NAME = *path) { *id = int(*rec.COLL_ID) } in
+	*id
+
+_ipc_getDataId(*Path) =
+	let *collPath = '' in
+	let *dataName = '' in
+	let *_ = msiSplitPath(*Path, *collPath, *dataName) in
+	let *id = -1 in
+	let *_ = foreach ( *rec in
+			SELECT DATA_ID WHERE COLL_NAME = *collPath AND DATA_NAME = *dataName
+		) { *id = int(*rec.DATA_ID) } in
+	*id
+
+_ipc_getEntityId(*Path) =
+	if cyverse_isColl(cyverse_getEntityType(*Path)) then _ipc_getCollectionId(*Path)
+	else _ipc_getDataId(*Path)
+
 
 # Compute the checksum of of a given replica of a given data object
 _ipc_chksumRepl(*Object, *ReplNum) {
-  msiAddKeyValToMspStr('forceChksum', '', *opts);
-  msiAddKeyValToMspStr('replNum', str(*ReplNum), *opts);
-  msiDataObjChksum(*Object, *opts, *_);
+	*id = _ipc_getDataId(*Object)
+	*opt = '';
+	msiAddKeyValToMspStr('forceChksum', '', *opts);
+	msiAddKeyValToMspStr('replNum', str(*ReplNum), *opts);
+
+	delay(
+		'<INST_NAME>irods_rule_engine_plugin-irods_rule_language-instance</INST_NAME>' ++
+		'<PLUSET>0s</PLUSET>' ++
+		'<EF>0s REPEAT 0 TIMES</EF>'
+  	) {
+		*dataPath = '';
+		foreach (*rec in SELECT COLL_NAME, DATA_NAME WHERE DATA_ID = '*id') {
+			*dataPath = *rec.COLL_NAME ++ '/' ++ *rec.DATA_NAME;
+		}
+
+		if (*dataPath != '') {
+			msiDataObjChksum(*dataPath, *opts, *_);
+		}
+	}
 }
 
 
