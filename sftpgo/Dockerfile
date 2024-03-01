@@ -26,7 +26,7 @@ RUN apt-get update && \
 
 # extract sftpgo-auth-irods
 RUN mkdir -p /tmp/sftpgo-auth-irods
-RUN curl -L https://github.com/cyverse/sftpgo-auth-irods/releases/download/v0.1.12/sftpgo-auth-irods-v0.1.12-linux-amd64.tar.gz --output /tmp/sftpgo-auth-irods/sftpgo-auth-irods.tar.gz
+RUN curl -L https://github.com/cyverse/sftpgo-auth-irods/releases/download/v0.1.13/sftpgo-auth-irods-v0.1.13-linux-amd64.tar.gz --output /tmp/sftpgo-auth-irods/sftpgo-auth-irods.tar.gz
 RUN tar zxvf /tmp/sftpgo-auth-irods/sftpgo-auth-irods.tar.gz -C /tmp/sftpgo-auth-irods && cp /tmp/sftpgo-auth-irods/sftpgo-auth-irods /usr/local/bin && rm -rf /tmp/sftpgo-auth-irods
 
 COPY sftpgo/scripts/sftpgo.json.template /tmp/sftpgo.json.template
