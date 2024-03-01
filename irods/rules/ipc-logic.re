@@ -424,30 +424,32 @@ _ipc_getEntityId(*Path) =
 	if cyverse_isColl(cyverse_getEntityType(*Path)) then _ipc_getCollectionId(*Path)
 	else _ipc_getDataId(*Path)
 
-
-# Compute the checksum of of a given replica of a given data object
-_ipc_chksumRepl(*Object, *ReplNum) {
-	*id = _ipc_getDataId(*Object)
-	*opt = '';
+# Compute the checksum of a given replica of a given data object
+_ipc_chksumRepl(*Id, *ReplNum) {
+  *opt = '';
 	msiAddKeyValToMspStr('forceChksum', '', *opts);
 	msiAddKeyValToMspStr('replNum', str(*ReplNum), *opts);
 
+  *dataPath = '';
+  foreach (*rec in SELECT COLL_NAME, DATA_NAME WHERE DATA_ID = '*Id') {
+    *dataPath = *rec.COLL_NAME ++ '/' ++ *rec.DATA_NAME;
+  }
+
+  if (*dataPath != '') {
+    msiDataObjChksum(*dataPath, *opts, *_);
+  }
+}
+
+# Schedule a task for computing the checksum of a given replica of a given data object
+_ipc_scheduleChksumRepl(*Object, *ReplNum) {
+	*id = _ipc_getDataId(*Object)
+	
 	delay(
 		'<INST_NAME>irods_rule_engine_plugin-irods_rule_language-instance</INST_NAME>' ++
 		'<PLUSET>0s</PLUSET>' ++
 		'<EF>0s REPEAT 0 TIMES</EF>'
-  	) {
-		*dataPath = '';
-		foreach (*rec in SELECT COLL_NAME, DATA_NAME WHERE DATA_ID = '*id') {
-			*dataPath = *rec.COLL_NAME ++ '/' ++ *rec.DATA_NAME;
-		}
-
-		if (*dataPath != '') {
-			msiDataObjChksum(*dataPath, *opts, *_);
-		}
-	}
+  ) {_ipc_chksumRepl(*id, *ReplNum)}
 }
-
 
 # Indicates whether or not an AVU is protected
 avuProtected(*ItemType, *ItemName, *Attribute) {
@@ -846,7 +848,7 @@ ipc_acPostProcForParallelTransferReceived(*LeafResource) {
 
 # XXX - Because of https://github.com/irods/irods/issues/5540
 # ipc_dataObjCreated_default(*User, *Zone, *DATA_OBJ_INFO) {
-#   *err = errormsg(_ipc_chksumRepl(*DATA_OBJ_INFO.logical_path, 0), *msg);
+#   *err = errormsg(_ipc_scheduleChksumRepl(*DATA_OBJ_INFO.logical_path, 0), *msg);
 #   if (*err < 0) { writeLine('serverLog', *msg); }
 #
 #   *err = errormsg(setAdminGroupPerm(*DATA_OBJ_INFO.logical_path), *msg);
@@ -876,7 +878,7 @@ ipc_dataObjCreated_default(*User, *Zone, *DATA_OBJ_INFO, *Step) {
   }
 
   if (*Step != 'START') {
-    *err = errormsg(_ipc_chksumRepl(*DATA_OBJ_INFO.logical_path, 0), *msg);
+    *err = errormsg(_ipc_scheduleChksumRepl(*DATA_OBJ_INFO.logical_path, 0), *msg);
     if (*err < 0) { writeLine('serverLog', *msg); }
    
     *uuid = retrieveUUID('-d', *DATA_OBJ_INFO.logical_path);
@@ -902,7 +904,7 @@ ipc_dataObjCreated_default(*User, *Zone, *DATA_OBJ_INFO, *Step) {
 
 # XXX - Because of https://github.com/irods/irods/issues/5540
 # ipc_dataObjCreated_staging(*User, *Zone, *DATA_OBJ_INFO) {
-#   *err = errormsg(_ipc_chksumRepl(*DATA_OBJ_INFO.logical_path, 0), *msg);
+#   *err = errormsg(_ipc_scheduleChksumRepl(*DATA_OBJ_INFO.logical_path, 0), *msg);
 #   if (*err < 0) { writeLine('serverLog', *msg); }
 #
 #   *err = errormsg(setAdminGroupPerm(*DATA_OBJ_INFO.logical_path), *msg);
@@ -915,7 +917,7 @@ ipc_dataObjCreated_staging(*User, *Zone, *DATA_OBJ_INFO, *Step) {
   }
 
   if (*Step != 'START') {
-    *err = errormsg(_ipc_chksumRepl(*DATA_OBJ_INFO.logical_path, 0), *msg);
+    *err = errormsg(_ipc_scheduleChksumRepl(*DATA_OBJ_INFO.logical_path, 0), *msg);
     if (*err < 0) { writeLine('serverLog', *msg); }
   }
 }
