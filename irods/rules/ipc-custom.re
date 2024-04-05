@@ -277,6 +277,26 @@ _ipc_dataObjCreated(*User, *Zone, *DATA_OBJ_INFO, *Step) {
 }
 # XXX - ^^^
 
+_ipc_dataObjCreating(*DATA_OBJ_INP) {
+  ipc_dataObjCreatingInEncryptionEnforcedColl(*DATA_OBJ_INP.obj_path);
+}
+
+_ipc_dataObjCopying(*DATA_OBJ_COPY_INP) {
+  ipc_dataObjCreatingInEncryptionEnforcedColl(*DATA_OBJ_COPY_INP.dst_obj_path);
+}
+
+_ipc_dataObjRenaming(*DATA_OBJ_RENAME_INP) {
+  ipc_dataObjCreatingInEncryptionEnforcedColl(*DATA_OBJ_RENAME_INP.dst_obj_path);
+}
+
+_ipc_dataObjBulkRegistering(*BULK_DATA_OBJ_REG_INP) {
+  ipc_dataObjBulkRegisteringInEncryptionEnforcedColl(*BULK_DATA_OBJ_REG_INP.obj_path);
+}
+
+_ipc_collectionCreated(*COLL_CREATE_INP) {
+  ipc_collectionCreatedInEncryptionEnforcedColl(*COLL_CREATE_INP.coll_name)
+}
+
 
 _ipc_dataObjModified(*User, *Zone, *DATA_OBJ_INFO) {
   *path = *DATA_OBJ_INFO.logical_path;
@@ -460,6 +480,61 @@ pep_database_reg_data_obj_post(*INSTANCE, *CONTEXT, *OUT, *DATA_OBJ_INFO) {
     ++ ' ' 
     ++ *DATA_OBJ_INFO.data_owner_zone;
 # XXX - ^^^
+}
+
+
+# API DATA OBJ CREATE
+
+
+pep_api_data_obj_create_pre(*INSTANCE, *COMM, *DATA_OBJ_INP) {
+  _ipc_dataObjCreating(*DATA_OBJ_INP)
+}
+
+pep_api_data_obj_create_and_stat_pre(*INSTANCE, *COMM, *DATA_OBJ_INP, *OPEN_STAT) {
+  _ipc_dataObjCreating(*DATA_OBJ_INP)
+}
+
+pep_api_data_obj_put_pre(*INSTANCE, *COMM, *DATA_OBJ_INP, *DATA_OBJ_INP_BBUF, *PORTAL_OPR_OUT) {
+  _ipc_dataObjCreating(*DATA_OBJ_INP)
+}
+
+pep_api_data_obj_rsync_pre(*INSTANCE, *COMM, *DATA_OBJ_INP, *OUT_PARAM_ARRAY) {
+  _ipc_dataObjCreating(*DATA_OBJ_INP)
+}
+
+pep_api_data_obj_open_and_stat_pre(*INSTANCE, *COMM, *DATA_OBJ_INP, *OPEN_STAT) {
+  # this is called when opening an existing file
+  # but there's no way to check if it is opening existing or creating a new one
+  if (int(*DATA_OBJ_INP.open_flags) != 0) {
+    # screen out calls for reading
+    _ipc_dataObjCreating(*DATA_OBJ_INP)
+  }
+}
+
+pep_api_data_obj_open_pre(*INSTANCE, *COMM, *DATA_OBJ_INP) {
+  # this is called when opening an existing file
+  # but there's no quick clear way to check if it is opening existing or creating a new one
+  # as there's no bitwise operations available
+  if (int(*DATA_OBJ_INP.open_flags) != 0) {
+    # screen out calls for reading
+    _ipc_dataObjCreating(*DATA_OBJ_INP)
+  }
+}
+
+pep_api_data_obj_copy_pre(*INSTANCE, *COMM, *DATA_OBJ_COPY_INP, *TRANS_STAT) {
+  _ipc_dataObjCopying(*DATA_OBJ_COPY_INP)
+}
+
+pep_api_data_obj_rename_pre(*INSTANCE, *COMM, *DATA_OBJ_RENAME_INP) {
+  _ipc_dataObjRenaming(*DATA_OBJ_RENAME_INP)
+}
+
+pep_api_struct_file_ext_and_reg_pre(*INSTANCE, *COMM, *STRUCT_FILE_EXT_AND_REG_INP) {
+  _ipc_dataObjBulkRegistering(*STRUCT_FILE_EXT_AND_REG_INP)
+}
+
+pep_api_coll_create_post(*INSTANCE, *COMM, *COLL_CREATE_INP) {
+  _ipc_collectionCreated(*COLL_CREATE_INP)
 }
 
 

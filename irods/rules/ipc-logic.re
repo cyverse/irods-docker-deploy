@@ -97,6 +97,17 @@ retrieveUUID(*EntityType, *EntityPath) {
   }
 }
 
+# Checks if encryption is required for the collection entity
+isEncryptionRequiredInCollection(*Coll) {
+  *isRequired = false;
+  *res = SELECT META_COLL_ATTR_VALUE WHERE COLL_NAME == *Coll AND META_COLL_ATTR_NAME == 'encryption.required';
+  foreach (*record in *res) {
+    *isRequired = bool(*record.META_COLL_ATTR_VALUE);
+    break;
+  }
+  *isRequired;
+}
+
 
 # sends a message to a given AMQP Streaming
 #
@@ -385,6 +396,16 @@ startsWith(*str, *prefix) =
   if strlen(*str) < strlen(*prefix) then false
   else if substr(*str, 0, strlen(*prefix)) != *prefix then false
   else true;
+
+
+# Determines whether or not the string in the first argument ends with the 
+# string in the second argument.
+#
+endsWith(*str, *suffix) =
+  if strlen(*str) < strlen(*suffix) then false
+  else if substr(*str, strlen(*str) - strlen(*suffix), strlen(*str)) != *suffix then false
+  else true;
+  
 
 
 # Removes a prefix from a string.
@@ -947,5 +968,52 @@ ipc_dataObjMetadataModified(*User, *Zone, *Object) {
   *uuid = retrieveDataUUID(*Object);
   if (*uuid != '') {
     _ipc_sendDataObjectMetadataModified(*User, *Zone, *uuid);
+  }
+}
+
+# This rule checks if encryption is enforced
+ipc_dataObjCreatingInEncryptionEnforcedColl(*Object) {
+  msiSplitPath(*Object, *parentColl, *objName);
+  writeLine('serverLog', "Checking encryption config for path *parentColl");
+
+  if (isEncryptionRequiredInCollection(*parentColl)) {
+    if (!endsWith(*objName, ".enc")) {
+      # fail to prevent iRODS from creating the file without encryption
+      writeLine('serverLog', "Failed to create data object, encryption is required under *parentColl");
+      cut;
+      failmsg(-815000, 'CYVERSE ERROR:  attempt to create unencrypted data object');
+    }
+  }
+}
+
+# This rule checks if encryption is enforced
+# we do not allow bulk registering in encryption enforced collection
+ipc_dataObjBulkRegisteringInEncryptionEnforcedColl(*Object) {
+  msiSplitPath(*Object, *parentColl, *objName);
+  writeLine('serverLog', "Checking encryption config for path *parentColl");
+
+  if (isEncryptionRequiredInCollection(*parentColl)) {
+    # we don't allow bulk registering files 
+    writeLine('serverLog', "Failed to bulk register data objects in encryption required collection *parentColl");
+    cut;
+    failmsg(-815000, 'CYVERSE ERROR:  attempt to bulk registering data objects in encryption required collection'); 
+  }
+}
+
+ipc_collectionCreatedInEncryptionEnforcedColl(*Coll) {
+  msiSplitPath(*Coll, *parentColl, *collName);
+  writeLine('serverLog', "Checking encryption config for path *parentColl");
+
+  if (isEncryptionRequiredInCollection(*parentColl)) {
+    # Add encryption require meta to the new coll
+    *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption.required', "true", ''), *msg);
+    if (*err < 0) { writeLine('serverLog', *msg); }
+
+    *res = SELECT META_COLL_ATTR_VALUE WHERE COLL_NAME == *parentColl AND META_COLL_ATTR_NAME == 'encryption.mode';
+    foreach (*record in *res) {
+      *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption.mode', *record.META_COLL_ATTR_VALUE, ''), *msg);
+      if (*err < 0) { writeLine('serverLog', *msg); }
+      break;
+    }
   }
 }
