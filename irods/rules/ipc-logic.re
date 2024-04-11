@@ -974,7 +974,7 @@ ipc_dataObjMetadataModified(*User, *Zone, *Object) {
 # This rule checks if encryption is enforced
 ipc_dataObjCreatingInEncryptionEnforcedColl(*Object) {
   msiSplitPath(*Object, *parentColl, *objName);
-  writeLine('serverLog', "Checking encryption config for path *parentColl");
+  writeLine('serverLog', "Checking encryption config for path *parentColl, obj *objName");
 
   if (isEncryptionRequiredInCollection(*parentColl)) {
     if (!endsWith(*objName, ".enc")) {
@@ -990,7 +990,7 @@ ipc_dataObjCreatingInEncryptionEnforcedColl(*Object) {
 # we do not allow bulk registering in encryption enforced collection
 ipc_dataObjBulkRegisteringInEncryptionEnforcedColl(*Object) {
   msiSplitPath(*Object, *parentColl, *objName);
-  writeLine('serverLog', "Checking encryption config for path *parentColl");
+  writeLine('serverLog', "Checking encryption config for path *parentColl, struct *objName");
 
   if (isEncryptionRequiredInCollection(*parentColl)) {
     # we don't allow bulk registering files 
@@ -1002,7 +1002,7 @@ ipc_dataObjBulkRegisteringInEncryptionEnforcedColl(*Object) {
 
 ipc_collectionCreatedInEncryptionEnforcedColl(*Coll) {
   msiSplitPath(*Coll, *parentColl, *collName);
-  writeLine('serverLog', "Checking encryption config for path *parentColl");
+  writeLine('serverLog', "Checking encryption config for path *parentColl, coll *collName");
 
   if (isEncryptionRequiredInCollection(*parentColl)) {
     # Add encryption require meta to the new coll
@@ -1015,5 +1015,78 @@ ipc_collectionCreatedInEncryptionEnforcedColl(*Coll) {
       if (*err < 0) { writeLine('serverLog', *msg); }
       break;
     }
+  }
+}
+
+ipc_collectionRenamingInEncryptionEnforcedCollInternal(*Coll) {
+  writeLine('serverLog', "checking encryption for rename target path *Coll recursively");
+
+  # check if src coll has non-encrypted data objects
+  *res = SELECT COLL_NAME, DATA_NAME WHERE COLL_NAME == *Coll;
+  foreach (*record in *res) {
+    writeLine('serverLog', "Checking data object *record in collection *Coll"); 
+
+    if (!endsWith(*record.DATA_NAME, ".enc")) {
+      # fail to prevent iRODS from creating the file without encryption
+      writeLine('serverLog', "Failed to create data object, encryption is required under *Coll");
+      cut;
+      failmsg(-815000, 'CYVERSE ERROR:  attempt to create unencrypted data object');
+    }
+  }
+
+  *res = SELECT COLL_NAME WHERE COLL_PARENT_NAME == *Coll;
+  foreach (*record in *res) {
+    # run recursively
+    # this might be very expensive if the directory tree is very deep
+    
+    writeLine('serverLog', "Checking sub collections *record in collection *Coll"); 
+    ipc_collectionRenamingInEncryptionEnforcedCollInternal(*record.COLL_NAME)
+  }
+}
+
+ipc_collectionRenamingInEncryptionEnforcedColl(*SrcColl, *DstColl) {
+  msiSplitPath(*DstColl, *parentColl, *collName);
+  writeLine('serverLog', "Checking encryption config for rename target path *parentColl, coll *collName"); 
+
+  if (isEncryptionRequiredInCollection(*parentColl)) {
+    ipc_collectionRenamingInEncryptionEnforcedCollInternal(*SrcColl)
+  }
+}
+
+ipc_collectionRenamedInEncryptionEnforcedCollInternal(*Coll, *EncryptionMode) {
+  writeLine('serverLog', "setting encryption config for rename target path *Coll recursively");
+
+  # Add encryption require meta to the sub coll
+  *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption.required', "true", ''), *msg);
+  if (*err < 0) { writeLine('serverLog', *msg); }
+
+  if (*EncryptionMode != '') {
+    *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption.mode', *EncryptionMode, ''), *msg);
+    if (*err < 0) { writeLine('serverLog', *msg); }  
+  }
+
+  *res = SELECT COLL_NAME WHERE COLL_PARENT_NAME == *Coll;
+  foreach (*record in *res) {
+    # run recursively
+    # this might be very expensive if the directory tree is very deep
+
+    writeLine('serverLog', "Checking sub collections *record in collection *Coll"); 
+    ipc_collectionRenamedInEncryptionEnforcedCollInternal(*record.COLL_NAME, *EncryptionMode)
+  }
+}
+
+ipc_collectionRenamedInEncryptionEnforcedColl(*SrcColl, *DstColl) {
+  msiSplitPath(*DstColl, *parentColl, *collName);
+  writeLine('serverLog', "Checking encryption config for rename target path *parentColl, coll *collName"); 
+
+  if (isEncryptionRequiredInCollection(*parentColl)) {
+    *mode = ''
+    *res = SELECT META_COLL_ATTR_VALUE WHERE COLL_NAME == *parentColl AND META_COLL_ATTR_NAME == 'encryption.mode';
+    foreach (*record in *res) {
+      *mode = *record.META_COLL_ATTR_VALUE;
+      break;
+    }
+
+    ipc_collectionRenamedInEncryptionEnforcedCollInternal(*DstColl, *mode)
   }
 }
