@@ -303,7 +303,7 @@ _ipc_dataObjRenamed(*DATA_OBJ_RENAME_INP) {
 }
 
 _ipc_dataObjBulkRegistering(*BULK_DATA_OBJ_REG_INP) {
-  ipc_dataObjBulkRegisteringInEncryptionEnforcedColl(*BULK_DATA_OBJ_REG_INP.obj_path);
+  ipc_dataObjBulkRegisteringInEncryptionEnforcedColl(*BULK_DATA_OBJ_REG_INP.collection_path);
 }
 
 _ipc_collectionCreated(*COLL_CREATE_INP) {
@@ -547,7 +547,12 @@ pep_api_data_obj_rename_post(*INSTANCE, *COMM, *DATA_OBJ_RENAME_INP) {
 }
 
 pep_api_struct_file_ext_and_reg_pre(*INSTANCE, *COMM, *STRUCT_FILE_EXT_AND_REG_INP) {
-  _ipc_dataObjBulkRegistering(*STRUCT_FILE_EXT_AND_REG_INP);
+  #writeLine('serverLog', "pep_api_struct_file_ext_and_reg_pre - *STRUCT_FILE_EXT_AND_REG_INP");
+  #writeLine('serverLog', "pep_api_struct_file_ext_and_reg_pre - *(STRUCT_FILE_EXT_AND_REG_INP.obj_path)");
+  #writeLine('serverLog', "pep_api_struct_file_ext_and_reg_pre - *(STRUCT_FILE_EXT_AND_REG_INP.collection_path)");
+
+  ## temporarily comment this out as it'll only work in iRODS v0.4.3
+  #_ipc_dataObjBulkRegistering(*STRUCT_FILE_EXT_AND_REG_INP);
 }
 
 pep_api_coll_create_post(*INSTANCE, *COMM, *COLL_CREATE_INP) {

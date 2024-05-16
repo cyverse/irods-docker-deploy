@@ -100,7 +100,7 @@ retrieveUUID(*EntityType, *EntityPath) {
 # Checks if encryption is required for the collection entity
 isEncryptionRequiredInCollection(*Coll) {
   *isRequired = false;
-  *res = SELECT META_COLL_ATTR_VALUE WHERE COLL_NAME == *Coll AND META_COLL_ATTR_NAME == 'encryption.required';
+  *res = SELECT META_COLL_ATTR_VALUE WHERE COLL_NAME == *Coll AND META_COLL_ATTR_NAME == 'encryption::required';
   foreach (*record in *res) {
     *isRequired = bool(*record.META_COLL_ATTR_VALUE);
     break;
@@ -988,9 +988,9 @@ ipc_dataObjCreatingInEncryptionEnforcedColl(*Object) {
 
 # This rule checks if encryption is enforced
 # we do not allow bulk registering in encryption enforced collection
-ipc_dataObjBulkRegisteringInEncryptionEnforcedColl(*Object) {
-  msiSplitPath(*Object, *parentColl, *objName);
-  writeLine('serverLog', "Checking encryption config for path *parentColl, struct *objName");
+ipc_dataObjBulkRegisteringInEncryptionEnforcedColl(*Coll) {
+  msiSplitPath(*Coll, *parentColl, *collName);
+  writeLine('serverLog', "Checking encryption config for path *parentColl, coll *collName");
 
   if (isEncryptionRequiredInCollection(*parentColl)) {
     # we don't allow bulk registering files 
@@ -1006,12 +1006,12 @@ ipc_collectionCreatedInEncryptionEnforcedColl(*Coll) {
 
   if (isEncryptionRequiredInCollection(*parentColl)) {
     # Add encryption require meta to the new coll
-    *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption.required', "true", ''), *msg);
+    *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption::required', "true", ''), *msg);
     if (*err < 0) { writeLine('serverLog', *msg); }
 
-    *res = SELECT META_COLL_ATTR_VALUE WHERE COLL_NAME == *parentColl AND META_COLL_ATTR_NAME == 'encryption.mode';
+    *res = SELECT META_COLL_ATTR_VALUE WHERE COLL_NAME == *parentColl AND META_COLL_ATTR_NAME == 'encryption::mode';
     foreach (*record in *res) {
-      *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption.mode', *record.META_COLL_ATTR_VALUE, ''), *msg);
+      *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption::mode', *record.META_COLL_ATTR_VALUE, ''), *msg);
       if (*err < 0) { writeLine('serverLog', *msg); }
       break;
     }
@@ -1057,11 +1057,11 @@ ipc_collectionRenamedInEncryptionEnforcedCollInternal(*Coll, *EncryptionMode) {
   writeLine('serverLog', "setting encryption config for rename target path *Coll recursively");
 
   # Add encryption require meta to the sub coll
-  *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption.required', "true", ''), *msg);
+  *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption::required', "true", ''), *msg);
   if (*err < 0) { writeLine('serverLog', *msg); }
 
   if (*EncryptionMode != '') {
-    *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption.mode', *EncryptionMode, ''), *msg);
+    *err = errormsg(msiModAVUMetadata("-C", *Coll, 'set', 'encryption::mode', *EncryptionMode, ''), *msg);
     if (*err < 0) { writeLine('serverLog', *msg); }  
   }
 
@@ -1081,7 +1081,7 @@ ipc_collectionRenamedInEncryptionEnforcedColl(*SrcColl, *DstColl) {
 
   if (isEncryptionRequiredInCollection(*parentColl)) {
     *mode = ''
-    *res = SELECT META_COLL_ATTR_VALUE WHERE COLL_NAME == *parentColl AND META_COLL_ATTR_NAME == 'encryption.mode';
+    *res = SELECT META_COLL_ATTR_VALUE WHERE COLL_NAME == *parentColl AND META_COLL_ATTR_NAME == 'encryption::mode';
     foreach (*record in *res) {
       *mode = *record.META_COLL_ATTR_VALUE;
       break;
